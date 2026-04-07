@@ -1,14 +1,23 @@
-<h1 align="center">Hey, I'm Nikita</h1>
+<h1 align="center">Nikita</h1>
 
 <p align="center">
-  Student in Vienna
+  IT student at TGM Vienna · Fabric mod dev · Java
+</p>
+
+<p align="center">
+  <a href="https://modrinth.com/user/MR-kartoshki">
+    <img src="https://img.shields.io/badge/Modrinth-00AF5C?style=flat-square&logo=modrinth&logoColor=white" />
+  </a>
+  <a href="https://discord.com/users/1080867173213417503">
+    <img src="https://img.shields.io/badge/Discord-freddy._.fazbear-5865F2?style=flat-square&logo=discord&logoColor=white" />
+  </a>
 </p>
 
 ---
 
-## About me
+I write Java, mostly for Minecraft mods. Occasionally Python or JS when something needs it. Projects start when something annoys me enough to fix it.
 
-I write code, mostly Java. Sometimes things outside of school catch my interest and become a project. Still learning. Always open to collaborating on something interesting.
+**Active project:** [CopyCoords](https://modrinth.com/mod/copycoordsmod) — a Fabric mod for copying, converting, and sharing coordinates.
 
 ---
 
@@ -21,26 +30,16 @@ I write code, mostly Java. Sometimes things outside of school catch my interest 
 
 ---
 
-## GitHub Stats
+## Stats
 
 <p align="center">
   <img src="https://github-readme-stats.vercel.app/api?username=MR-kartoshki&show_icons=true&theme=tokyonight&hide_border=true" height="165" />
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=MR-kartoshki&layout=compact&theme=tokyonight&hide_border=true" height="165" />
 </p>
-
 <p align="center">
   <img src="https://streak-stats.demolab.com?user=MR-kartoshki&theme=tokyonight&hide_border=true" />
 </p>
 
----
-
-## Contact
-
-- Discord: [freddy._.fazbear](https://discord.com/users/1080867173213417503) 
-- Modrinth: [MR-Kartoshki](https://modrinth.com/user/MR-kartoshki)
-
----
-
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=MR-kartoshki&color=blue&style=flat-square" alt="Profile views" />
+  <img src="https://komarev.com/ghpvc/?username=MR-kartoshki&color=blue&style=flat-square" />
 </p>
