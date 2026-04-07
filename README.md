@@ -17,7 +17,7 @@
 
 I write Java, mostly for Minecraft mods. Occasionally Python or JS when something needs it. Projects start when something annoys me enough to fix it.
 
-**Active project:** [CopyCoords](https://modrinth.com/mod/copycoordsmod) — a Fabric mod for copying, converting, and sharing coordinates.
+**Active project:** [CopyCoords](https://modrinth.com/mod/copycoordsmod) - a Fabric mod for copying, converting, and sharing coordinates.
 
 ---
 
