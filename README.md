@@ -33,8 +33,8 @@ I write Java, mostly for Minecraft mods. Occasionally Python or JS when somethin
 ## Stats
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=MR-kartoshki&show_icons=true&theme=tokyonight&hide_border=true" height="165" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=MR-kartoshki&layout=compact&theme=tokyonight&hide_border=true" height="165" />
+  <img src="https://mr-kartoshki-stats.vercel.app/api?username=MR-kartoshki&show_icons=true&theme=tokyonight&hide_border=true" height="165" />
+  <img src="https://mr-kartoshki-stats.vercel.app/api/top-langs/?username=MR-kartoshki&layout=compact&theme=tokyonight&hide_border=true" height="165" />
 </p>
 <p align="center">
   <img src="https://streak-stats.demolab.com?user=MR-kartoshki&theme=tokyonight&hide_border=true" />
