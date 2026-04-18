@@ -1,7 +1,7 @@
 <h1 align="center">Nikita</h1>
 
 <p align="center">
-  IT student at TGM Vienna · Fabric mod dev · Java
+  IT student at TGM Vienna · Minecraft mod dev · Fabric & Java
 </p>
 
 <p align="center">
@@ -17,7 +17,9 @@
 
 I write Java, mostly for Minecraft mods. Occasionally Python or JS when something needs it. Projects start when something annoys me enough to fix it.
 
-**Active project:** [CopyCoords](https://modrinth.com/mod/copycoordsmod) - a Fabric mod for copying, converting, and sharing coordinates. 1K DOWNLOADS!!
+**Active project:** [CopyCoords](https://modrinth.com/mod/copycoordsmod) - a Fabric mod for copying, converting, and sharing coordinates.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="https://modrinth.com/mod/copycoordsmod">
+  <img src="https://img.shields.io/modrinth/dt/copycoordsmod?color=00AF5C&label=Downloads&logo=modrinth" height="16" style="vertical-align: -2px">
+</a>
 
 ---
 
