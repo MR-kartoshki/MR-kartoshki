@@ -8,11 +8,17 @@ const languageFilter = document.getElementById("languageFilter");
 const hideForksToggle = document.getElementById("hideForksToggle");
 const homeGithubLink = document.getElementById("homeGithubLink");
 const contactGithubLink = document.getElementById("contactGithubLink");
+const contactFormToggle = document.getElementById("contactFormToggle");
+const contactFormPanel = document.getElementById("contactFormPanel");
+const contactNameInput = document.getElementById("contactName");
 
 const state = {
   repos: [],
+  repoLanguages: new Map(),
+  hasIncompleteLanguageData: false,
 };
 const skeletonCardCount = 6;
+const maxExpandedLanguageCount = 3;
 
 const updatedDateFormatter = new Intl.DateTimeFormat(undefined, {
   year: "numeric",
@@ -22,6 +28,24 @@ const updatedDateFormatter = new Intl.DateTimeFormat(undefined, {
 
 homeGithubLink.href = `https://github.com/${username}`;
 contactGithubLink.href = `https://github.com/${username}`;
+
+if (contactFormToggle && contactFormPanel) {
+  contactFormToggle.addEventListener("click", () => {
+    const isHidden = contactFormPanel.hasAttribute("hidden");
+
+    if (isHidden) {
+      contactFormPanel.removeAttribute("hidden");
+      contactFormToggle.setAttribute("aria-expanded", "true");
+      contactFormToggle.textContent = "Hide email form";
+      contactNameInput?.focus();
+      return;
+    }
+
+    contactFormPanel.setAttribute("hidden", "");
+    contactFormToggle.setAttribute("aria-expanded", "false");
+    contactFormToggle.textContent = "Send email";
+  });
+}
 
 function setStatus(message, type = "info") {
   statusMessage.textContent = message;
@@ -47,12 +71,76 @@ function formatUpdatedDate(value) {
   return updatedDateFormatter.format(date);
 }
 
+function formatRepoLanguages(repo) {
+  const languages = state.repoLanguages.get(repo.id);
+
+  if (!Array.isArray(languages) || languages.length === 0) {
+    return repo.language ? repo.language : "Not specified";
+  }
+
+  if (languages.length <= maxExpandedLanguageCount) {
+    return languages.join(", ");
+  }
+
+  const [mainLanguage, ...otherLanguages] = languages;
+  return `${mainLanguage} + ${otherLanguages.length} others`;
+}
+
+async function loadRepoLanguages(repos) {
+  const languageRequests = repos.map(async (repo) => {
+    const response = await fetch(repo.languages_url, {
+      headers: {
+        Accept: "application/vnd.github+json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub API returned status ${response.status}.`);
+    }
+
+    const payload = await response.json();
+
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      throw new Error("Unexpected API response.");
+    }
+
+    const languages = Object.entries(payload)
+      .filter(([, bytes]) => typeof bytes === "number")
+      .sort(([, leftBytes], [, rightBytes]) => rightBytes - leftBytes)
+      .map(([language]) => language);
+
+    return {
+      repoId: repo.id,
+      languages,
+    };
+  });
+
+  const results = await Promise.allSettled(languageRequests);
+  const repoLanguages = new Map();
+  let hasFailures = false;
+
+  for (const [index, result] of results.entries()) {
+    const repo = repos[index];
+
+    if (result.status === "fulfilled") {
+      repoLanguages.set(result.value.repoId, result.value.languages);
+      continue;
+    }
+
+    hasFailures = true;
+    repoLanguages.set(repo.id, repo.language ? [repo.language] : []);
+  }
+
+  state.repoLanguages = repoLanguages;
+  state.hasIncompleteLanguageData = hasFailures;
+}
+
 function createProjectCard(repo) {
   const card = document.createElement("article");
   card.className = "project-card";
 
   const description = repo.description ? repo.description : "No description provided.";
-  const language = repo.language ? repo.language : "Not specified";
+  const languageSummary = formatRepoLanguages(repo);
   const stars = typeof repo.stargazers_count === "number" ? repo.stargazers_count : 0;
   const forks = typeof repo.forks_count === "number" ? repo.forks_count : 0;
   const lastUpdated = formatUpdatedDate(repo.updated_at);
@@ -66,7 +154,7 @@ function createProjectCard(repo) {
 
   const meta = document.createElement("p");
   meta.className = "project-meta";
-  meta.textContent = `Language: ${language}`;
+  meta.textContent = `Language: ${languageSummary}`;
 
   const stats = document.createElement("div");
   stats.className = "project-stats";
@@ -197,7 +285,10 @@ function renderProjects() {
   }
 
   projectsGrid.append(fragment);
-  setStatus(`Showing ${filteredRepos.length} repositories.`);
+  const languageWarning = state.hasIncompleteLanguageData
+    ? " Some language details are unavailable."
+    : "";
+  setStatus(`Showing ${filteredRepos.length} repositories.${languageWarning}`);
 }
 
 async function fetchRepositories() {
@@ -229,6 +320,7 @@ async function fetchRepositories() {
       (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
     );
 
+    await loadRepoLanguages(state.repos);
     updateLanguageFilterOptions(state.repos);
     renderProjects();
   } catch (error) {

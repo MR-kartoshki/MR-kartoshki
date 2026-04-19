@@ -88,11 +88,35 @@
     <section id="contact" class="section">
       <div class="container">
         <h2>Contact</h2>
-        <p>Find me on GitHub, Discord, or send me an email.</p>
+        <p>Find me on GitHub, Discord, or send me a direct message here.</p>
         <div class="contact-links">
           <a id="contactGithubLink" class="button" href="#" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a class="button" href="https://discord.com/users/1080867173213417503" target="_blank" rel="noopener noreferrer">Discord</a>
-          <a class="button" href="mailto:mrkartoshki@gmail.com">Email</a>
+          <button id="contactFormToggle" class="button" type="button" aria-controls="contactFormPanel" aria-expanded="false">Send email</button>
+        </div>
+
+        <div id="contactFormPanel" hidden>
+          <form class="contact-form" action="https://formspree.io/f/xlganvzd" method="POST">
+            <input type="hidden" name="_subject" value="Portfolio contact from MR-Kartoshki">
+
+            <label class="control" for="contactName">
+              <span>Name</span>
+              <input id="contactName" type="text" name="name" autocomplete="name" placeholder="Your name" required>
+            </label>
+
+            <label class="control" for="contactEmail">
+              <span>Email</span>
+              <input id="contactEmail" type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+            </label>
+
+            <label class="control" for="contactMessage">
+              <span>Message</span>
+              <textarea id="contactMessage" name="message" rows="6" placeholder="Tell me what you need help with." required></textarea>
+            </label>
+
+            <input class="contact-honeypot" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button class="button" type="submit">Send message</button>
+          </form>
         </div>
       </div>
     </section>

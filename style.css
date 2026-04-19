@@ -122,7 +122,9 @@ p {
   background: var(--highlight);
   color: var(--button-text);
   text-decoration: none;
+  font: inherit;
   font-weight: 700;
+  cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
@@ -295,10 +297,38 @@ p {
   gap: 0.8rem;
 }
 
+.contact-form {
+  margin-top: 1.2rem;
+  display: grid;
+  gap: 0.9rem;
+  max-width: 680px;
+}
+
+.contact-form .control {
+  margin: 0;
+}
+
+.control textarea {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--accent);
+  background: var(--bg-end);
+  color: var(--text);
+  padding: 0.5rem 0.6rem;
+  resize: vertical;
+  min-height: 8rem;
+}
+
+.contact-honeypot {
+  position: absolute;
+  left: -9999px;
+}
+
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
-select:focus-visible {
+select:focus-visible,
+textarea:focus-visible {
   outline: 2px solid var(--highlight);
   outline-offset: 2px;
 }
