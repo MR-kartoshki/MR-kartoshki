@@ -96,11 +96,6 @@ jobs:
       - name: Commit and push cache changes
         shell: bash
         run: |
-          if git diff --quiet --exit-code -- data/repos-cache.json; then
-            echo "No cache changes to commit."
-            exit 0
-          fi
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/repos-cache.json
