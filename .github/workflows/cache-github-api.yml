@@ -3,8 +3,8 @@ name: Cache GitHub API data
 on:
   workflow_dispatch:
   schedule:
-    # Refresh cache every 15 minutes.
-    - cron: "*/15 * * * *"
+    # Refresh cache every 5 minutes.
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: write
