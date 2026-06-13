@@ -1,0 +1,210 @@
+{
+  "generated_at": "2026-06-13T21:24:34.305Z",
+  "username": "MR-kartoshki",
+  "has_incomplete_language_data": false,
+  "repos": [
+    {
+      "id": 1181991899,
+      "name": "MR-kartoshki",
+      "description": "Profile README and portfolio website",
+      "language": "JavaScript",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-06-13T21:23:23Z",
+      "html_url": "https://github.com/MR-kartoshki/MR-kartoshki",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/MR-kartoshki/languages"
+    },
+    {
+      "id": 1220919903,
+      "name": "Rawlands",
+      "description": "My proudest project yet. This mod adds several new biomes to the game along with new blocks and flowers.",
+      "language": "Java",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-06-13T10:53:07Z",
+      "html_url": "https://github.com/MR-kartoshki/Rawlands",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/Rawlands/languages"
+    },
+    {
+      "id": 1256451576,
+      "name": "CliffTree",
+      "description": "A vanilla-like worldgen overhaul",
+      "language": null,
+      "fork": true,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-06-01T19:43:24Z",
+      "html_url": "https://github.com/MR-kartoshki/CliffTree",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/CliffTree/languages"
+    },
+    {
+      "id": 1230748862,
+      "name": "YT-Downloader",
+      "description": "A GUI for the yt-dlp tool. Completely self contained and installs all dependencies by itself. Programmed in Python.",
+      "language": "Python",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-05-08T11:43:34Z",
+      "html_url": "https://github.com/MR-kartoshki/YT-Downloader",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/YT-Downloader/languages"
+    },
+    {
+      "id": 1227615701,
+      "name": "UtilityBox",
+      "description": "Old program I made a while ago but didnt upload to GH also Im too lazy to write a readme for this youll figure it out urself",
+      "language": "Python",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-05-02T23:47:21Z",
+      "html_url": "https://github.com/MR-kartoshki/UtilityBox",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/UtilityBox/languages"
+    },
+    {
+      "id": 1207204340,
+      "name": "github-readme-stats",
+      "description": ":zap: Dynamically generated stats for your github readmes",
+      "language": null,
+      "fork": true,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-04-21T07:02:14Z",
+      "html_url": "https://github.com/MR-kartoshki/github-readme-stats",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/github-readme-stats/languages"
+    },
+    {
+      "id": 1216156398,
+      "name": "Osage-Orange",
+      "description": "Fabric mod for Minecraft 1.21.11 that adds a full Osage Orange tree and wood set with a throwable Hedge Apple item.",
+      "language": "Java",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-04-20T18:45:41Z",
+      "html_url": "https://github.com/MR-kartoshki/Osage-Orange",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/Osage-Orange/languages"
+    },
+    {
+      "id": 1214659802,
+      "name": "Elytra-Feather-Falling",
+      "description": "Make Elytra compatible with Feather Falling and soften Elytra descent by scaling gravity (not by adding artificial upward boost).",
+      "language": "Java",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-04-18T21:52:49Z",
+      "html_url": "https://github.com/MR-kartoshki/Elytra-Feather-Falling",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/Elytra-Feather-Falling/languages"
+    },
+    {
+      "id": 1214385695,
+      "name": "Ultimate-Mining-Tycoon-Utility",
+      "description": "A free, simple Lua script for the game \"Ultimate Mining Tycoon\" on Roblox",
+      "language": "Lua",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-04-18T14:23:01Z",
+      "html_url": "https://github.com/MR-kartoshki/Ultimate-Mining-Tycoon-Utility",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/Ultimate-Mining-Tycoon-Utility/languages"
+    },
+    {
+      "id": 1158838755,
+      "name": "CopyCoords",
+      "description": "  CopyCoords is a client-side Fabric mod that makes coordinates faster to copy, convert, and share.",
+      "language": "Java",
+      "fork": false,
+      "stargazers_count": 1,
+      "forks_count": 0,
+      "updated_at": "2026-04-17T15:55:44Z",
+      "html_url": "https://github.com/MR-kartoshki/CopyCoords",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/CopyCoords/languages"
+    },
+    {
+      "id": 1207153287,
+      "name": "meteor-rejects",
+      "description": "An addon to Meteor Client with features that won't be added to Meteor. Because they were either rejected or are ports from other clients.",
+      "language": null,
+      "fork": true,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-04-10T16:24:39Z",
+      "html_url": "https://github.com/MR-kartoshki/meteor-rejects",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/meteor-rejects/languages"
+    },
+    {
+      "id": 1165846816,
+      "name": "SubtitleScale",
+      "description": "SubtitleScale is a client-side Fabric mod that lets you resize the vanilla subtitles overlay.",
+      "language": "Java",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-03-13T23:20:39Z",
+      "html_url": "https://github.com/MR-kartoshki/SubtitleScale",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/SubtitleScale/languages"
+    },
+    {
+      "id": 1167051890,
+      "name": "AutoReplyContent",
+      "description": "A Vencord userplugin that automatically sends a configurable response when a message starting with a specific trigger phrase is sent in a channel.",
+      "language": "TypeScript",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-02-27T20:41:23Z",
+      "html_url": "https://github.com/MR-kartoshki/AutoReplyContent",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/AutoReplyContent/languages"
+    }
+  ],
+  "repo_languages": {
+    "1158838755": [
+      "Java"
+    ],
+    "1165846816": [
+      "Java"
+    ],
+    "1167051890": [
+      "TypeScript",
+      "JavaScript"
+    ],
+    "1181991899": [
+      "JavaScript",
+      "CSS",
+      "HTML"
+    ],
+    "1207153287": [
+      "Java"
+    ],
+    "1207204340": [
+      "JavaScript",
+      "Shell"
+    ],
+    "1214385695": [
+      "Lua"
+    ],
+    "1214659802": [
+      "Java"
+    ],
+    "1216156398": [
+      "Java"
+    ],
+    "1220919903": [
+      "Java",
+      "Python"
+    ],
+    "1227615701": [
+      "Python"
+    ],
+    "1230748862": [
+      "Python",
+      "Batchfile"
+    ],
+    "1256451576": [
+      "mcfunction"
+    ]
+  }
+}
