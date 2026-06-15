@@ -12,6 +12,7 @@ permissions:
 jobs:
   refresh-cache:
     runs-on: ubuntu-latest
+    if: github.event.head_commit.author.name != 'github-actions[bot]'
 
     steps:
       - name: Checkout repository
@@ -20,6 +21,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate cache payload
+        id: generate
         uses: actions/github-script@v7
         with:
           script: |
@@ -80,20 +82,48 @@ jobs:
               languages_url: repo.languages_url,
             }));
 
-            const payload = {
-              generated_at: new Date().toISOString(),
+            const outputPath = path.join(process.env.GITHUB_WORKSPACE, "data", "repos-cache.json");
+            fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+
+            const newPayload = {
               username,
               has_incomplete_language_data: hasIncompleteLanguageData,
               repos: minimalRepos,
               repo_languages: repoLanguages,
             };
 
-            const outputPath = path.join(process.env.GITHUB_WORKSPACE, "data", "repos-cache.json");
-            fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+            let oldPayload = {};
+            if (fs.existsSync(outputPath)) {
+              const oldContent = fs.readFileSync(outputPath, "utf8");
+              oldPayload = JSON.parse(oldContent);
+              delete oldPayload.generated_at;
+            }
+
+            const filterOutSelfRepo = (payload) => {
+              const filtered = { ...payload };
+              filtered.repos = payload.repos.filter(r => r.name !== "MR-kartoshki");
+              filtered.repo_languages = { ...payload.repo_languages };
+              for (const repo of payload.repos) {
+                if (repo.name === "MR-kartoshki") {
+                  delete filtered.repo_languages[String(repo.id)];
+                }
+              }
+              return filtered;
+            };
+
+            const payloadChanged = JSON.stringify(filterOutSelfRepo(newPayload)) !== JSON.stringify(filterOutSelfRepo(oldPayload));
+
+            const payload = {
+              generated_at: new Date().toISOString(),
+              ...newPayload,
+            };
+
             fs.writeFileSync(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
             core.info(`Wrote ${minimalRepos.length} repositories to ${outputPath}`);
+            core.setOutput("changed", payloadChanged);
 
       - name: Commit and push cache changes
+        if: steps.generate.outputs.changed == 'true'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
