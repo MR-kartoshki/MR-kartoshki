@@ -27,7 +27,7 @@
 
 ---
 
-I write Java, mostly for Minecraft mods. Occasionally Python or Lua when something needs it. Projects start when something annoys me enough to fix it or when a friend says "Wouldn't it be funny if..."
+I write Java, mostly for Minecraft mods. Occasionally Python or C++ when something needs it. Projects start when something annoys me enough to fix it or when a friend says "Wouldn't it be funny if..."
 
 **Proudest project:** [Rawlands](https://github.com/MR-kartoshki/Rawlands) - This mod adds several new biomes to the game along with new blocks and flowers.
 
