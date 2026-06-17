@@ -93,11 +93,15 @@ jobs:
             };
 
             let oldPayload = { repos: [], repo_languages: {} };
-            if (fs.existsSync(outputPath)) {
+            const fileExists = fs.existsSync(outputPath);
+            if (fileExists) {
               const oldContent = fs.readFileSync(outputPath, "utf8");
               oldPayload = JSON.parse(oldContent);
               delete oldPayload.generated_at;
             }
+            core.info(`Cache file exists: ${fileExists}`);
+            core.info(`Old repo count: ${(oldPayload.repos || []).length}`);
+            core.info(`New repo count: ${newPayload.repos.length}`);
 
             const filterOutSelfRepo = (payload) => {
               const filtered = { ...payload };
@@ -111,12 +115,21 @@ jobs:
               return filtered;
             };
 
-            const newPayloadFiltered = JSON.stringify(filterOutSelfRepo(newPayload));
-            const oldPayloadFiltered = JSON.stringify(filterOutSelfRepo(oldPayload));
-            const payloadChanged = newPayloadFiltered !== oldPayloadFiltered;
+            const newPayloadFiltered = filterOutSelfRepo(newPayload);
+            const oldPayloadFiltered = filterOutSelfRepo(oldPayload);
+            const payloadChanged = JSON.stringify(newPayloadFiltered) !== JSON.stringify(oldPayloadFiltered);
 
-            core.info(`New payload (filtered): ${newPayloadFiltered.substring(0, 100)}...`);
-            core.info(`Old payload (filtered): ${oldPayloadFiltered.substring(0, 100)}...`);
+            core.info(`New filtered repo count: ${newPayloadFiltered.repos.length}`);
+            core.info(`Old filtered repo count: ${oldPayloadFiltered.repos.length}`);
+
+            // Show first repo from each for comparison
+            if (newPayloadFiltered.repos.length > 0) {
+              core.info(`Sample new repo: ${JSON.stringify(newPayloadFiltered.repos[0])}`);
+            }
+            if (oldPayloadFiltered.repos.length > 0) {
+              core.info(`Sample old repo: ${JSON.stringify(oldPayloadFiltered.repos[0])}`);
+            }
+
             core.info(`Payload changed: ${payloadChanged}`);
 
             const payload = {
