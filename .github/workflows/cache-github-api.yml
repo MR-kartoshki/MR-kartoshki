@@ -12,7 +12,7 @@ permissions:
 jobs:
   refresh-cache:
     runs-on: ubuntu-latest
-    if: github.event.head_commit.author.name != 'github-actions[bot]'
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.event.head_commit.author.name != 'github-actions[bot]')
 
     steps:
       - name: Checkout repository
