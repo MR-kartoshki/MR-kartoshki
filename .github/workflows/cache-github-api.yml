@@ -105,15 +105,12 @@ jobs:
 
             const payloadChanged = JSON.stringify(newPayload) !== JSON.stringify(oldPayload);
 
-            core.info(`New filtered repo count: ${newPayloadFiltered.repos.length}`);
-            core.info(`Old filtered repo count: ${oldPayloadFiltered.repos.length}`);
-
             // Show first repo from each for comparison
-            if (newPayloadFiltered.repos.length > 0) {
-              core.info(`Sample new repo: ${JSON.stringify(newPayloadFiltered.repos[0])}`);
+            if (newPayload.repos.length > 0) {
+              core.info(`Sample new repo: ${JSON.stringify(newPayload.repos[0])}`);
             }
-            if (oldPayloadFiltered.repos.length > 0) {
-              core.info(`Sample old repo: ${JSON.stringify(oldPayloadFiltered.repos[0])}`);
+            if (oldPayload.repos.length > 0) {
+              core.info(`Sample old repo: ${JSON.stringify(oldPayload.repos[0])}`);
             }
 
             core.info(`Payload changed: ${payloadChanged}`);
