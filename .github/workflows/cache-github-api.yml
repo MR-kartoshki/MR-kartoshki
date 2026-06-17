@@ -103,21 +103,7 @@ jobs:
             core.info(`Old repo count: ${(oldPayload.repos || []).length}`);
             core.info(`New repo count: ${newPayload.repos.length}`);
 
-            const filterOutSelfRepo = (payload) => {
-              const filtered = { ...payload };
-              filtered.repos = (payload.repos || []).filter(r => r.name !== "MR-kartoshki");
-              filtered.repo_languages = { ...payload.repo_languages };
-              for (const repo of payload.repos || []) {
-                if (repo.name === "MR-kartoshki") {
-                  delete filtered.repo_languages[String(repo.id)];
-                }
-              }
-              return filtered;
-            };
-
-            const newPayloadFiltered = filterOutSelfRepo(newPayload);
-            const oldPayloadFiltered = filterOutSelfRepo(oldPayload);
-            const payloadChanged = JSON.stringify(newPayloadFiltered) !== JSON.stringify(oldPayloadFiltered);
+            const payloadChanged = JSON.stringify(newPayload) !== JSON.stringify(oldPayload);
 
             core.info(`New filtered repo count: ${newPayloadFiltered.repos.length}`);
             core.info(`Old filtered repo count: ${oldPayloadFiltered.repos.length}`);
