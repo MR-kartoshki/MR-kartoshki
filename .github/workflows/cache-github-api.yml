@@ -92,7 +92,7 @@ jobs:
               repo_languages: repoLanguages,
             };
 
-            let oldPayload = {};
+            let oldPayload = { repos: [], repo_languages: {} };
             if (fs.existsSync(outputPath)) {
               const oldContent = fs.readFileSync(outputPath, "utf8");
               oldPayload = JSON.parse(oldContent);
@@ -101,9 +101,9 @@ jobs:
 
             const filterOutSelfRepo = (payload) => {
               const filtered = { ...payload };
-              filtered.repos = payload.repos.filter(r => r.name !== "MR-kartoshki");
+              filtered.repos = (payload.repos || []).filter(r => r.name !== "MR-kartoshki");
               filtered.repo_languages = { ...payload.repo_languages };
-              for (const repo of payload.repos) {
+              for (const repo of payload.repos || []) {
                 if (repo.name === "MR-kartoshki") {
                   delete filtered.repo_languages[String(repo.id)];
                 }
@@ -111,7 +111,13 @@ jobs:
               return filtered;
             };
 
-            const payloadChanged = JSON.stringify(filterOutSelfRepo(newPayload)) !== JSON.stringify(filterOutSelfRepo(oldPayload));
+            const newPayloadFiltered = JSON.stringify(filterOutSelfRepo(newPayload));
+            const oldPayloadFiltered = JSON.stringify(filterOutSelfRepo(oldPayload));
+            const payloadChanged = newPayloadFiltered !== oldPayloadFiltered;
+
+            core.info(`New payload (filtered): ${newPayloadFiltered.substring(0, 100)}...`);
+            core.info(`Old payload (filtered): ${oldPayloadFiltered.substring(0, 100)}...`);
+            core.info(`Payload changed: ${payloadChanged}`);
 
             const payload = {
               generated_at: new Date().toISOString(),
@@ -130,4 +136,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/repos-cache.json
           git commit -m "chore: refresh GitHub API cache"
-          git push
+          git push origin HEAD:${{ github.ref_name }}
