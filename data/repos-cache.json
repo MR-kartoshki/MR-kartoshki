@@ -1,8 +1,20 @@
 {
-  "generated_at": "2026-06-25T09:13:58.058Z",
+  "generated_at": "2026-06-25T10:21:59.497Z",
   "username": "MR-kartoshki",
   "has_incomplete_language_data": false,
   "repos": [
+    {
+      "id": 1216156398,
+      "name": "Osage-Orange",
+      "description": "Fabric mod for Minecraft 1.21.11 that adds a full Osage Orange tree and wood set with a throwable Hedge Apple item.",
+      "language": "Java",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-06-25T10:18:17Z",
+      "html_url": "https://github.com/MR-kartoshki/Osage-Orange",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/Osage-Orange/languages"
+    },
     {
       "id": 1181991899,
       "name": "MR-kartoshki",
@@ -11,7 +23,7 @@
       "fork": false,
       "stargazers_count": 0,
       "forks_count": 0,
-      "updated_at": "2026-06-25T07:54:50Z",
+      "updated_at": "2026-06-25T09:14:02Z",
       "html_url": "https://github.com/MR-kartoshki/MR-kartoshki",
       "languages_url": "https://api.github.com/repos/MR-kartoshki/MR-kartoshki/languages"
     },
@@ -74,18 +86,6 @@
       "updated_at": "2026-04-21T07:02:14Z",
       "html_url": "https://github.com/MR-kartoshki/github-readme-stats",
       "languages_url": "https://api.github.com/repos/MR-kartoshki/github-readme-stats/languages"
-    },
-    {
-      "id": 1216156398,
-      "name": "Osage-Orange",
-      "description": "Fabric mod for Minecraft 1.21.11 that adds a full Osage Orange tree and wood set with a throwable Hedge Apple item.",
-      "language": "Java",
-      "fork": false,
-      "stargazers_count": 0,
-      "forks_count": 0,
-      "updated_at": "2026-04-20T18:45:41Z",
-      "html_url": "https://github.com/MR-kartoshki/Osage-Orange",
-      "languages_url": "https://api.github.com/repos/MR-kartoshki/Osage-Orange/languages"
     },
     {
       "id": 1214659802,
