@@ -1,8 +1,32 @@
 {
-  "generated_at": "2026-07-09T15:29:31.505Z",
+  "generated_at": "2026-07-09T17:30:27.887Z",
   "username": "MR-kartoshki",
   "has_incomplete_language_data": false,
   "repos": [
+    {
+      "id": 1295565749,
+      "name": "sedna",
+      "description": "Sedna - a pure Java RISC-V emulator. Will be used for my minecraft mod which lets you run a Linux (TUI) inside of minecraft.",
+      "language": null,
+      "fork": true,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-07-09T16:58:48Z",
+      "html_url": "https://github.com/MR-kartoshki/sedna",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/sedna/languages"
+    },
+    {
+      "id": 1181991899,
+      "name": "MR-kartoshki",
+      "description": "Profile README and portfolio website",
+      "language": "JavaScript",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-07-09T15:31:10Z",
+      "html_url": "https://github.com/MR-kartoshki/MR-kartoshki",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/MR-kartoshki/languages"
+    },
     {
       "id": 1220919903,
       "name": "Rawlands",
@@ -14,18 +38,6 @@
       "updated_at": "2026-07-09T15:09:22Z",
       "html_url": "https://github.com/MR-kartoshki/Rawlands",
       "languages_url": "https://api.github.com/repos/MR-kartoshki/Rawlands/languages"
-    },
-    {
-      "id": 1181991899,
-      "name": "MR-kartoshki",
-      "description": "Profile README and portfolio website",
-      "language": "JavaScript",
-      "fork": false,
-      "stargazers_count": 0,
-      "forks_count": 0,
-      "updated_at": "2026-07-09T12:02:49Z",
-      "html_url": "https://github.com/MR-kartoshki/MR-kartoshki",
-      "languages_url": "https://api.github.com/repos/MR-kartoshki/MR-kartoshki/languages"
     },
     {
       "id": 1283402424,
@@ -234,6 +246,9 @@
       "Java"
     ],
     "1283402424": [
+      "Java"
+    ],
+    "1295565749": [
       "Java"
     ]
   }
