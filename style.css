@@ -8,6 +8,17 @@
   --surface: #1f2937;
   --button-text: #0b1220;
   --danger: #fda4af;
+
+  --page-scrollbar-radius: 22;
+  --page-scrollbar-stroke: 6;
+  --page-scrollbar-inset: 4;
+  --page-scrollbar-thumb: 90;
+  --page-scrollbar-finish: 5;
+  --page-scrollbar-scroll-padding: 100;
+  --page-scrollbar-trail: 0;
+  --page-scrollbar-thumb-size: 90;
+  --page-scrollbar-track-length: 0;
+  --page-scrollbar-offset: 0;
 }
 
 *,
@@ -427,5 +438,68 @@ textarea:focus-visible {
 
   .nav-links {
     flex-wrap: wrap;
+  }
+}
+
+html[data-page-scrollbar] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html[data-page-scrollbar]::-webkit-scrollbar,
+html[data-page-scrollbar] body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.page-scrollbar {
+  position: fixed;
+  top: 0;
+  right: 6px;
+  height: 100vh;
+  width: calc(var(--page-scrollbar-radius) * 2px);
+  pointer-events: none;
+  z-index: 2000;
+  overflow: visible !important;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+html[data-page-scrollbar] .page-scrollbar {
+  opacity: 1;
+}
+
+.page-scrollbar path {
+  stroke-width: calc(var(--page-scrollbar-stroke) * 1px);
+  vector-effect: non-scaling-stroke;
+}
+
+.page-scrollbar__track {
+  stroke: hsl(0 0% 100% / 0.08);
+}
+
+.page-scrollbar__thumb {
+  stroke: var(--highlight);
+  stroke-dasharray: var(--page-scrollbar-thumb-size) var(--page-scrollbar-track-length);
+  stroke-dashoffset: var(--page-scrollbar-offset);
+  filter: drop-shadow(0 0 6px hsl(199 89% 55% / 0.35));
+}
+
+@media (max-width: 700px) {
+  .page-scrollbar {
+    right: 2px;
+    --page-scrollbar-radius: 16;
+    --page-scrollbar-stroke: 5;
+    --page-scrollbar-thumb: 60;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-scrollbar {
+    transition: none;
+  }
+  .page-scrollbar__thumb {
+    filter: none;
   }
 }

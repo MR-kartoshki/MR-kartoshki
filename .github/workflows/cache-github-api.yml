@@ -78,6 +78,8 @@ jobs:
               stargazers_count: repo.stargazers_count,
               forks_count: repo.forks_count,
               updated_at: repo.updated_at,
+              created_at: repo.created_at,
+              pushed_at: repo.pushed_at,
               html_url: repo.html_url,
               languages_url: repo.languages_url,
             }));
