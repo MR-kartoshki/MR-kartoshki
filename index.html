@@ -68,7 +68,7 @@
       <div class="container">
         <h2>Projects</h2>
         <div class="controls" aria-label="Project filters">
-          <label class="control">
+          <label class="control control--search">
             <span>Search</span>
             <input id="searchInput" type="search" placeholder="Search repository name" autocomplete="off">
           </label>
@@ -90,15 +90,17 @@
             </select>
           </label>
 
-          <label class="toggle">
-            <input id="hideForksToggle" type="checkbox" checked>
-            <span>Hide forks</span>
-          </label>
+          <div class="controls-toggles">
+            <label class="toggle">
+              <input id="hideForksToggle" type="checkbox" checked>
+              <span>Hide forks</span>
+            </label>
 
-          <label class="toggle">
-            <input id="reverseSortToggle" type="checkbox">
-            <span>Reverse order</span>
-          </label>
+            <label class="toggle">
+              <input id="reverseSortToggle" type="checkbox">
+              <span>Reverse order</span>
+            </label>
+          </div>
         </div>
 
         <p id="statusMessage" class="status" role="status" aria-live="polite"></p>
