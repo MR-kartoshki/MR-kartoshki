@@ -7,6 +7,8 @@ const statusMessage = document.getElementById("statusMessage");
 const searchInput = document.getElementById("searchInput");
 const languageFilter = document.getElementById("languageFilter");
 const hideForksToggle = document.getElementById("hideForksToggle");
+const sortSelect = document.getElementById("sortSelect");
+const reverseSortToggle = document.getElementById("reverseSortToggle");
 const homeGithubLink = document.getElementById("homeGithubLink");
 const contactGithubLink = document.getElementById("contactGithubLink");
 const contactFormToggle = document.getElementById("contactFormToggle");
@@ -383,9 +385,39 @@ function getFilteredRepos() {
   });
 }
 
+function getSortValue(repo, sortKey) {
+  switch (sortKey) {
+    case "created":
+      return Date.parse(repo.created_at ?? repo.updated_at) || 0;
+    case "stars":
+      return typeof repo.stargazers_count === "number" ? repo.stargazers_count : 0;
+    case "forks":
+      return typeof repo.forks_count === "number" ? repo.forks_count : 0;
+    case "pushed":
+    default:
+      return Date.parse(repo.pushed_at ?? repo.updated_at) || 0;
+  }
+}
+
+function getSortedRepos(repos) {
+  const sortKey = sortSelect ? sortSelect.value : "pushed";
+  const reverse = reverseSortToggle ? reverseSortToggle.checked : false;
+  const direction = reverse ? 1 : -1;
+  const nameTiebreak = reverse ? 1 : -1;
+
+  return [...repos].sort((a, b) => {
+    const av = getSortValue(a, sortKey);
+    const bv = getSortValue(b, sortKey);
+    if (av !== bv) {
+      return (av < bv ? -1 : 1) * direction;
+    }
+    return a.name.localeCompare(b.name) * nameTiebreak;
+  });
+}
+
 function renderProjects() {
   projectsGrid.innerHTML = "";
-  const filteredRepos = getFilteredRepos();
+  const filteredRepos = getSortedRepos(getFilteredRepos());
 
   if (filteredRepos.length === 0) {
     setStatus("No repositories match the current filters.");
@@ -403,6 +435,7 @@ function renderProjects() {
     ? " Some language details are unavailable."
     : "";
   setStatus(`Showing ${filteredRepos.length} repositories.${languageWarning}`);
+  syncPageScrollbar();
 }
 
 function sortReposByUpdatedDate(repos) {
@@ -545,5 +578,182 @@ async function fetchRepositories() {
 searchInput.addEventListener("input", renderProjects);
 languageFilter.addEventListener("change", renderProjects);
 hideForksToggle.addEventListener("change", renderProjects);
+sortSelect?.addEventListener("change", renderProjects);
+reverseSortToggle?.addEventListener("change", renderProjects);
 
 fetchRepositories();
+
+// -------------------------------------------------------------
+// Custom page scrollbar (adapted from Jhey's rounded SVG scrollbar demo)
+// -------------------------------------------------------------
+const pageScrollbar = document.querySelector(".page-scrollbar");
+const pageScrollbarTrack = pageScrollbar?.querySelector(".page-scrollbar__track");
+const pageScrollbarThumb = pageScrollbar?.querySelector(".page-scrollbar__thumb");
+
+const PAGE_SCROLLBAR = {
+  radius: 22,
+  stroke: 6,
+  inset: 4,
+  thumb: 90,
+  finish: 5,
+  scrollPadding: 100,
+  trail: 0,
+  cornerLength: 0,
+  trackLength: 0,
+};
+
+function readScrollbarCssVars() {
+  const cs = getComputedStyle(document.documentElement);
+  const num = (name, fallback) => {
+    const raw = cs.getPropertyValue(name).trim();
+    const parsed = Number.parseFloat(raw);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+  PAGE_SCROLLBAR.radius = num("--page-scrollbar-radius", PAGE_SCROLLBAR.radius);
+  PAGE_SCROLLBAR.stroke = num("--page-scrollbar-stroke", PAGE_SCROLLBAR.stroke);
+  PAGE_SCROLLBAR.inset = num("--page-scrollbar-inset", PAGE_SCROLLBAR.inset);
+  PAGE_SCROLLBAR.thumb = num("--page-scrollbar-thumb", PAGE_SCROLLBAR.thumb);
+  PAGE_SCROLLBAR.finish = num("--page-scrollbar-finish", PAGE_SCROLLBAR.finish);
+  PAGE_SCROLLBAR.scrollPadding = num("--page-scrollbar-scroll-padding", PAGE_SCROLLBAR.scrollPadding);
+  PAGE_SCROLLBAR.trail = num("--page-scrollbar-trail", PAGE_SCROLLBAR.trail);
+}
+
+function scrollbarGeometry() {
+  const c = PAGE_SCROLLBAR;
+  const innerRad = Math.max(0, c.radius - (c.inset + c.stroke * 0.5));
+  const padTop = c.inset + c.stroke * 0.5;
+  const padLeft = c.radius * 2 - padTop;
+  return { mid: c.radius, innerRad, padTop, padLeft, trail: c.trail };
+}
+
+function buildScrollbarTopPath() {
+  const { mid, innerRad, padTop, padLeft, trail } = scrollbarGeometry();
+  const topCorner = innerRad === 0
+    ? `L${padLeft},${padTop}`
+    : `a${innerRad},${innerRad} 0 0 1 ${innerRad} ${innerRad}`;
+  return `M${mid - trail},${padTop}
+    ${innerRad === 0 ? "" : `L${mid},${padTop}`}
+    ${topCorner}`;
+}
+
+function buildScrollbarPath(height) {
+  const { mid, innerRad, padTop, padLeft, trail } = scrollbarGeometry();
+
+  const topCorner = innerRad === 0
+    ? `L${padLeft},${padTop}`
+    : `a${innerRad},${innerRad} 0 0 1 ${innerRad} ${innerRad}`;
+
+  const bottomStraight = `L${padLeft},${height - (padTop + innerRad)}`;
+
+  const bottomCorner = innerRad === 0
+    ? `L${padLeft},${height - padTop}`
+    : `a${innerRad},${innerRad} 0 0 1 ${-innerRad} ${innerRad}`;
+
+  return `M${mid - trail},${padTop}
+    ${innerRad === 0 ? "" : `L${mid},${padTop}`}
+    ${topCorner}
+    ${bottomStraight}
+    ${bottomCorner}
+    L${mid - trail},${height - padTop}`;
+}
+
+function syncPageScrollbar() {
+  if (!pageScrollbar || !pageScrollbarTrack || !pageScrollbarThumb) return;
+
+  readScrollbarCssVars();
+
+  const height = window.innerHeight;
+  pageScrollbar.setAttribute("viewBox", `0 0 ${PAGE_SCROLLBAR.radius * 2} ${height}`);
+  pageScrollbar.style.setProperty("--stroke-width", PAGE_SCROLLBAR.stroke);
+
+  const d = buildScrollbarPath(height);
+  pageScrollbarTrack.setAttribute("d", d);
+  pageScrollbarThumb.setAttribute("d", d);
+
+  const trackLength = Math.ceil(pageScrollbarTrack.getTotalLength());
+  PAGE_SCROLLBAR.trackLength = trackLength;
+
+  pageScrollbarThumb.setAttribute("d", buildScrollbarTopPath());
+  PAGE_SCROLLBAR.cornerLength = Math.ceil(pageScrollbarThumb.getTotalLength());
+
+  pageScrollbarThumb.setAttribute("d", d);
+
+  document.documentElement.style.setProperty("--page-scrollbar-thumb-size", PAGE_SCROLLBAR.thumb);
+  document.documentElement.style.setProperty("--page-scrollbar-track-length", trackLength);
+
+  const scrollable = getScrollableAmount();
+  document.documentElement.toggleAttribute("data-page-scrollbar", scrollable > 0);
+
+  updatePageScrollbarThumb();
+}
+
+function getScrollableAmount() {
+  return Math.max(0, (document.documentElement.scrollHeight || 0) - window.innerHeight);
+}
+
+function updatePageScrollbarThumb() {
+  if (!pageScrollbarThumb) return;
+
+  const scrollable = getScrollableAmount();
+  if (scrollable <= 0) {
+    document.documentElement.style.setProperty("--page-scrollbar-offset", 0);
+    return;
+  }
+
+  const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+  const progress = Math.min(1, Math.max(0, scrollTop / scrollable));
+
+  const { thumb, finish, cornerLength, trackLength, scrollPadding } = PAGE_SCROLLBAR;
+
+  const p1 = Math.min(0.5, Math.max(0.01, scrollPadding / scrollable));
+  const p2 = 1 - p1;
+
+  const v0 = thumb - finish;
+  const v1 = -cornerLength;
+  const v2 = -(trackLength - cornerLength - thumb);
+  const v3 = -(trackLength - finish);
+
+  let offset;
+  if (progress <= p1) {
+    const t = progress / p1;
+    offset = v0 + (v1 - v0) * t;
+  } else if (progress <= p2) {
+    const t = (progress - p1) / (p2 - p1);
+    offset = v1 + (v2 - v1) * t;
+  } else {
+    const t = (progress - p2) / (1 - p2);
+    offset = v2 + (v3 - v2) * t;
+  }
+
+  document.documentElement.style.setProperty("--page-scrollbar-offset", offset);
+}
+
+let scrollbarResizeFrame;
+function schedulePageScrollbarResize() {
+  if (scrollbarResizeFrame) cancelAnimationFrame(scrollbarResizeFrame);
+  scrollbarResizeFrame = requestAnimationFrame(() => {
+    scrollbarResizeFrame = 0;
+    syncPageScrollbar();
+  });
+}
+
+if (pageScrollbar) {
+  syncPageScrollbar();
+  window.addEventListener("scroll", updatePageScrollbarThumb, { passive: true });
+  window.addEventListener("resize", schedulePageScrollbarResize);
+  const bodyObserver = new ResizeObserver(schedulePageScrollbarResize);
+  bodyObserver.observe(document.body);
+
+  // Lenis (smooth scroll) suppresses native scroll events when scrolling
+  // programmatically or via its raf loop, so poll each frame to stay in sync.
+  let lastScrollY = -1;
+  const pollScroll = () => {
+    const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    if (y !== lastScrollY) {
+      lastScrollY = y;
+      updatePageScrollbarThumb();
+    }
+    requestAnimationFrame(pollScroll);
+  };
+  requestAnimationFrame(pollScroll);
+}
