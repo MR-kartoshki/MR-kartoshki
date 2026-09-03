@@ -1,8 +1,22 @@
 {
-  "generated_at": "2026-09-02T23:23:55.938Z",
+  "generated_at": "2026-09-03T01:18:57.102Z",
   "username": "MR-kartoshki",
   "has_incomplete_language_data": false,
   "repos": [
+    {
+      "id": 1355151585,
+      "name": "SmartORC",
+      "description": "Fast local OCR from the command line using PaddleOCR and ONNX Runtime.",
+      "language": "Python",
+      "fork": false,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "updated_at": "2026-09-03T01:18:04Z",
+      "created_at": "2026-09-02T19:25:36Z",
+      "pushed_at": "2026-09-03T01:18:05Z",
+      "html_url": "https://github.com/MR-kartoshki/SmartORC",
+      "languages_url": "https://api.github.com/repos/MR-kartoshki/SmartORC/languages"
+    },
     {
       "id": 1181991899,
       "name": "MR-kartoshki",
@@ -11,25 +25,11 @@
       "fork": false,
       "stargazers_count": 0,
       "forks_count": 0,
-      "updated_at": "2026-09-02T21:26:38Z",
+      "updated_at": "2026-09-02T23:24:06Z",
       "created_at": "2026-03-14T22:32:31Z",
-      "pushed_at": "2026-09-02T21:18:31Z",
+      "pushed_at": "2026-09-02T23:23:57Z",
       "html_url": "https://github.com/MR-kartoshki/MR-kartoshki",
       "languages_url": "https://api.github.com/repos/MR-kartoshki/MR-kartoshki/languages"
-    },
-    {
-      "id": 1355151585,
-      "name": "SmartORC",
-      "description": "Fast local OCR from the command line using PaddleOCR and ONNX Runtime.",
-      "language": null,
-      "fork": false,
-      "stargazers_count": 0,
-      "forks_count": 0,
-      "updated_at": "2026-09-02T19:25:37Z",
-      "created_at": "2026-09-02T19:25:36Z",
-      "pushed_at": "2026-09-02T19:25:37Z",
-      "html_url": "https://github.com/MR-kartoshki/SmartORC",
-      "languages_url": "https://api.github.com/repos/MR-kartoshki/SmartORC/languages"
     },
     {
       "id": 1220919903,
@@ -281,6 +281,9 @@
       "HTML",
       "CSS"
     ],
-    "1355151585": []
+    "1355151585": [
+      "Python",
+      "Shell"
+    ]
   }
 }
