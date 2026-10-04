@@ -1,6 +1,5 @@
 const username = "MR-kartoshki";
-const apiEndpoint = `https://api.github.com/users/${username}/repos`;
-const cacheEndpoint = "./data/repos-cache.json";
+const apiEndpoint = "/api/repos";
 
 const projectsGrid = document.getElementById("projectsGrid");
 const statusMessage = document.getElementById("statusMessage");
@@ -28,7 +27,6 @@ const maxExpandedLanguageCount = 3;
 const messageCooldownMs = 10_000;
 const cooldownStorageKey = "contactFormLastSentAt";
 const cooldownTickMs = 250;
-const cacheFreshnessMs = 10 * 60_000;
 
 let contactCooldownIntervalId;
 
@@ -200,55 +198,6 @@ function formatRepoLanguages(repo) {
 
   const [mainLanguage, ...otherLanguages] = languages;
   return `${mainLanguage} + ${otherLanguages.length} others`;
-}
-
-async function loadRepoLanguages(repos) {
-  const languageRequests = repos.map(async (repo) => {
-    const response = await fetch(repo.languages_url, {
-      headers: {
-        Accept: "application/vnd.github+json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`GitHub API returned status ${response.status}.`);
-    }
-
-    const payload = await response.json();
-
-    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-      throw new Error("Unexpected API response.");
-    }
-
-    const languages = Object.entries(payload)
-      .filter(([, bytes]) => typeof bytes === "number")
-      .sort(([, leftBytes], [, rightBytes]) => rightBytes - leftBytes)
-      .map(([language]) => language);
-
-    return {
-      repoId: repo.id,
-      languages,
-    };
-  });
-
-  const results = await Promise.allSettled(languageRequests);
-  const repoLanguages = new Map();
-  let hasFailures = false;
-
-  for (const [index, result] of results.entries()) {
-    const repo = repos[index];
-
-    if (result.status === "fulfilled") {
-      repoLanguages.set(result.value.repoId, result.value.languages);
-      continue;
-    }
-
-    hasFailures = true;
-    repoLanguages.set(repo.id, repo.language ? [repo.language] : []);
-  }
-
-  state.repoLanguages = repoLanguages;
-  state.hasIncompleteLanguageData = hasFailures;
 }
 
 function createProjectCard(repo) {
@@ -444,8 +393,8 @@ function sortReposByUpdatedDate(repos) {
   );
 }
 
-async function fetchCachedRepositories() {
-  const response = await fetch(cacheEndpoint, {
+async function fetchRepositoriesFromApi() {
+  const response = await fetch(apiEndpoint, {
     cache: "no-store",
     headers: {
       Accept: "application/json",
@@ -453,17 +402,17 @@ async function fetchCachedRepositories() {
   });
 
   if (!response.ok) {
-    throw new Error(`Cache file returned status ${response.status}.`);
+    throw new Error(`Repository API returned status ${response.status}.`);
   }
 
   const payload = await response.json();
 
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    throw new Error("Unexpected cache payload.");
+    throw new Error("Unexpected API payload.");
   }
 
   if (!Array.isArray(payload.repos)) {
-    throw new Error("Unexpected cache repositories payload.");
+    throw new Error("Unexpected API repositories payload.");
   }
 
   const repoLanguages = new Map();
@@ -491,60 +440,15 @@ async function fetchCachedRepositories() {
     repos: sortReposByUpdatedDate(payload.repos),
     repoLanguages,
     hasIncompleteLanguageData: Boolean(payload.has_incomplete_language_data),
-    generatedAtMs: Number(Date.parse(payload.generated_at)),
   };
 }
 
-function applyCachedRepositories(cachedData) {
-  state.repos = cachedData.repos;
-  state.repoLanguages = cachedData.repoLanguages;
-  state.hasIncompleteLanguageData = cachedData.hasIncompleteLanguageData;
+function applyRepositories(data) {
+  state.repos = data.repos;
+  state.repoLanguages = data.repoLanguages;
+  state.hasIncompleteLanguageData = data.hasIncompleteLanguageData;
   updateLanguageFilterOptions(state.repos);
   renderProjects();
-}
-
-function isCacheStale(generatedAtMs) {
-  if (!Number.isFinite(generatedAtMs)) {
-    return true;
-  }
-
-  return Date.now() - generatedAtMs > cacheFreshnessMs;
-}
-
-async function fetchRepositoriesFromApi() {
-  const response = await fetch(apiEndpoint, {
-    headers: {
-      Accept: "application/vnd.github+json",
-    },
-  });
-
-  if (!response.ok) {
-    if (response.status === 403) {
-      throw new Error("GitHub API rate limit reached. Please try again later.");
-    }
-
-    throw new Error(`GitHub API returned status ${response.status}.`);
-  }
-
-  const repos = await response.json();
-
-  if (!Array.isArray(repos)) {
-    throw new Error("Unexpected API response.");
-  }
-
-  const sortedRepos = sortReposByUpdatedDate(repos);
-  await loadRepoLanguages(sortedRepos);
-  return sortedRepos;
-}
-
-async function refreshRepositoriesSilently() {
-  try {
-    state.repos = await fetchRepositoriesFromApi();
-    updateLanguageFilterOptions(state.repos);
-    renderProjects();
-  } catch (error) {
-    console.warn("Background repository refresh failed.", error);
-  }
 }
 
 async function fetchRepositories() {
@@ -552,26 +456,10 @@ async function fetchRepositories() {
   renderLoadingSkeletons();
 
   try {
-    const cachedData = await fetchCachedRepositories();
-    applyCachedRepositories(cachedData);
-
-    if (isCacheStale(cachedData.generatedAtMs)) {
-      void refreshRepositoriesSilently();
-    }
-
-    return;
-  } catch (cacheError) {
-    try {
-      state.repos = await fetchRepositoriesFromApi();
-      updateLanguageFilterOptions(state.repos);
-      renderProjects();
-      return;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error.";
-      const cacheMessage =
-        cacheError instanceof Error ? cacheError.message : "Unknown cache error.";
-      setStatus(`Failed to load repositories: ${message} (cache error: ${cacheMessage})`, "error");
-    }
+    applyRepositories(await fetchRepositoriesFromApi());
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error.";
+    setStatus(`Failed to load repositories: ${message}`, "error");
   }
 }
 

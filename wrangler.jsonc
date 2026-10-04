@@ -3,12 +3,21 @@
   "name": "mr-kartoshki",
   "compatibility_date": "2026-06-13",
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.01
+    }
   },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
   "compatibility_flags": [
     "nodejs_compat"
-  ]
+  ],
+  "main": "worker.js"
 }
