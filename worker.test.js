@@ -63,6 +63,22 @@ test("paginates repositories and tolerates unavailable languages", async (t) => 
   assert.equal(response.headers.get("Cache-Control"), "public, max-age=60");
 });
 
+test("without a token, loads public repos using their primary languages", async (t) => {
+  const { ctx, pending } = setup(t);
+  fetch.mock.mockImplementation(async (url, options) => {
+    assert.equal(options.headers.Authorization, undefined);
+    assert.ok(new URL(url).pathname.endsWith("/repos"));
+    return Response.json([{ id: 1, name: "example", language: "Rust" }]);
+  });
+  const response = await worker.fetch(request(), {}, ctx);
+  assert.equal(response.status, 200);
+  const data = await response.json();
+  assert.deepEqual(data.repo_languages[1], ["Rust"]);
+  assert.equal(data.has_incomplete_language_data, true);
+  assert.equal(fetch.mock.callCount(), 1);
+  await Promise.all(pending);
+});
+
 test("static requests use the asset binding and API rejects writes", async (t) => {
   const { ctx } = setup(t);
   const env = { ASSETS: { fetch: async () => new Response("portfolio") } };

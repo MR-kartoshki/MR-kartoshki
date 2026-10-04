@@ -5,7 +5,7 @@ async function githubJson(path, token) {
   const response = await fetch(`https://api.github.com${path}`, {
     headers: {
       Accept: "application/vnd.github+json",
-      Authorization: `Bearer ${token}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       "User-Agent": "mr-kartoshki-portfolio",
     },
     signal: AbortSignal.timeout(10_000),
@@ -27,6 +27,11 @@ async function loadRepositories(token) {
   const repoLanguages = {};
   let incomplete = false;
   for (const repo of repos) {
+    if (!token) {
+      incomplete = true;
+      repoLanguages[repo.id] = repo.language ? [repo.language] : [];
+      continue;
+    }
     try {
       const languages = await githubJson(`/repos/${username}/${encodeURIComponent(repo.name)}/languages`, token);
       repoLanguages[repo.id] = Object.entries(languages)
@@ -70,14 +75,14 @@ export default {
     // Ignore query strings so visitors cannot force new GitHub requests.
     const cacheKey = new Request(`${url.origin}/api/repos`);
     const cached = await caches.default.match(cacheKey);
-    if (cached && Date.now() - Date.parse(cached.headers.get("Last-Modified")) < freshnessMs) {
+    const cacheFreshness = env.GITHUB_TOKEN ? freshnessMs : 60 * 60_000;
+    if (cached && Date.now() - Date.parse(cached.headers.get("Last-Modified")) < cacheFreshness) {
       const response = new Response(cached.body, cached);
       response.headers.set("Cache-Control", "public, max-age=60");
       return response;
     }
 
     try {
-      if (!env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN secret is missing");
       const payload = await loadRepositories(env.GITHUB_TOKEN);
       const response = Response.json(payload, {
         headers: {

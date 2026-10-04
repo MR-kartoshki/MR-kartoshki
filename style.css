@@ -5,18 +5,18 @@
   --heading: #f8fafc;
   --highlight: #38bdf8;
   --accent: #334155;
-  --surface: #1f2937;
+  --surface: rgb(8 22 42 / 35%);
   --button-text: #0b1220;
   --danger: #fda4af;
 
-  --page-scrollbar-radius: 22;
-  --page-scrollbar-stroke: 6;
+  --page-scrollbar-radius: 32;
+  --page-scrollbar-stroke: 7;
   --page-scrollbar-inset: 4;
-  --page-scrollbar-thumb: 90;
+  --page-scrollbar-thumb: 80;
   --page-scrollbar-finish: 5;
   --page-scrollbar-scroll-padding: 100;
   --page-scrollbar-trail: 0;
-  --page-scrollbar-thumb-size: 90;
+  --page-scrollbar-thumb-size: 80;
   --page-scrollbar-track-length: 0;
   --page-scrollbar-offset: 0;
 }
@@ -32,12 +32,27 @@ html {
 }
 
 body {
+  isolation: isolate;
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text);
   background: linear-gradient(160deg, var(--bg-start), var(--bg-end));
   min-height: 100vh;
   line-height: 1.6;
+}
+
+.water-background {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.water-background--ready {
+  opacity: 1;
 }
 
 .container {
@@ -50,7 +65,7 @@ body {
   top: 0;
   z-index: 1000;
   backdrop-filter: blur(8px);
-  background: linear-gradient(90deg, var(--bg-start), var(--accent));
+  background: var(--surface);
   border-bottom: 1px solid var(--accent);
 }
 
@@ -135,9 +150,10 @@ p {
   display: inline-block;
   padding: 0.65rem 1.1rem;
   border-radius: 999px;
-  border: 1px solid var(--highlight);
-  background: var(--highlight);
-  color: var(--button-text);
+  border: 1px solid rgb(56 189 248 / 45%);
+  background: rgb(56 189 248 / 22%);
+  backdrop-filter: blur(8px);
+  color: var(--heading);
   text-decoration: none;
   font: inherit;
   font-weight: 700;
@@ -233,6 +249,7 @@ p {
   align-items: center;
   gap: 0.55rem;
   background: var(--surface);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--accent);
   border-radius: 0.7rem;
   padding: 0.7rem;
@@ -248,7 +265,7 @@ p {
   width: 100%;
   border-radius: 0.5rem;
   border: 1px solid var(--accent);
-  background: var(--bg-end);
+  background: var(--surface);
   color: var(--text);
   padding: 0.5rem 0.6rem;
 }
@@ -281,6 +298,7 @@ p {
   border: 1px solid var(--accent);
   border-radius: 0.9rem;
   background: var(--surface);
+  backdrop-filter: blur(8px);
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -408,7 +426,7 @@ p {
   width: 100%;
   border-radius: 0.5rem;
   border: 1px solid var(--accent);
-  background: var(--bg-end);
+  background: var(--surface);
   color: var(--text);
   padding: 0.5rem 0.6rem;
   resize: vertical;
@@ -477,7 +495,7 @@ html[data-page-scrollbar] body::-webkit-scrollbar {
 .page-scrollbar {
   position: fixed;
   top: 0;
-  right: 6px;
+  right: 8px;
   height: 100vh;
   width: calc(var(--page-scrollbar-radius) * 2px);
   pointer-events: none;
@@ -497,30 +515,18 @@ html[data-page-scrollbar] .page-scrollbar {
 }
 
 .page-scrollbar__track {
-  stroke: hsl(0 0% 100% / 0.08);
+  stroke: transparent;
 }
 
 .page-scrollbar__thumb {
-  stroke: var(--highlight);
+  stroke: rgb(100 156 184 / 50%);
+  filter: drop-shadow(0 0 1px rgb(203 213 225 / 45%));
   stroke-dasharray: var(--page-scrollbar-thumb-size) var(--page-scrollbar-track-length);
   stroke-dashoffset: var(--page-scrollbar-offset);
-  filter: drop-shadow(0 0 6px hsl(199 89% 55% / 0.35));
-}
-
-@media (max-width: 700px) {
-  .page-scrollbar {
-    right: 2px;
-    --page-scrollbar-radius: 16;
-    --page-scrollbar-stroke: 5;
-    --page-scrollbar-thumb: 60;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .page-scrollbar {
     transition: none;
-  }
-  .page-scrollbar__thumb {
-    filter: none;
   }
 }

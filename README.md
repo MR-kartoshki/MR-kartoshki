@@ -27,7 +27,7 @@
 
 ---
 
-I write Java, mostly for Minecraft mods. Occasionally Python or C++ when something needs it. Projects start when something annoys me enough to fix it or when a friend says "Wouldn't it be funny if..."
+I write Java, mostly for Minecraft mods. Occasionally Python or Rust when something needs it. Projects start when something annoys me enough to fix it or when a friend says "Wouldn't it be funny if..."
 
 **Proudest project:** [Rawlands](https://github.com/MR-kartoshki/Rawlands) - This mod adds several new biomes to the game along with new blocks and flowers.
 
@@ -44,7 +44,7 @@ I write Java, mostly for Minecraft mods. Occasionally Python or C++ when somethi
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=000000)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 
-![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-68217A?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...&logoColor=white)
 
 ---

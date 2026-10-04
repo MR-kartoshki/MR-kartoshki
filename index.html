@@ -10,25 +10,26 @@
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="MR-Kartoshki | Portfolio">
+  <meta property="og:title" content="MR-Kartoshki">
   <meta property="og:description" content="IT student and developer focused on practical tools and Minecraft modding.">
   <meta property="og:url" content="https://mr-kartoshki.github.io/MR-kartoshki/">
-  <meta property="og:site_name" content="MR-Kartoshki Portfolio">
+  <meta property="og:site_name" content="MR-Kartoshki">
   <meta property="og:image" content="https://avatars.githubusercontent.com/MR-kartoshki?size=512">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="MR-Kartoshki | Portfolio">
+  <meta name="twitter:title" content="MR-Kartoshki">
   <meta name="twitter:description" content="IT student and developer focused on practical tools and Minecraft modding.">
   <meta name="twitter:image" content="https://avatars.githubusercontent.com/MR-kartoshki?size=512">
-  <title>MR-Kartoshki | Portfolio</title>
+  <title>MR-Kartoshki</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
+  <script src="water.js" type="module"></script>
 
   <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.25/dist/lenis.css">
   <script src="https://unpkg.com/lenis@1.3.25/dist/lenis.min.js"></script>
-  <script>new Lenis({ autoRaf: true, autoToggle: true, anchors: true, allowNestedScroll: true, naiveDimensions: true, stopInertiaOnNavigate: true })</script>
 </head>
 <body>
+  <canvas class="water-background" aria-hidden="true"></canvas>
   <header class="site-header">
     <nav class="nav container" aria-label="Main navigation">
       <a class="brand" href="#home">MR-Kartoshki</a>
@@ -59,7 +60,7 @@
       <div class="container">
         <h2>About</h2>
         <p>
-          I write Java, mostly for Minecraft mods. Occasionally Python or C++ when something needs it. Projects start when something annoys me enough to fix it or when a friend says "Wouldn't it be funny if..."
+          I write Java, mostly for Minecraft mods. Occasionally Python or Rust when something needs it. Projects start when something annoys me enough to fix it or when a friend says "Wouldn't it be funny if..."
         </p>
       </div>
     </section>

@@ -471,7 +471,6 @@ reverseSortToggle?.addEventListener("change", renderProjects);
 
 fetchRepositories();
 
-// -------------------------------------------------------------
 // Custom page scrollbar (adapted from Jhey's rounded SVG scrollbar demo)
 // -------------------------------------------------------------
 const pageScrollbar = document.querySelector(".page-scrollbar");
@@ -479,10 +478,10 @@ const pageScrollbarTrack = pageScrollbar?.querySelector(".page-scrollbar__track"
 const pageScrollbarThumb = pageScrollbar?.querySelector(".page-scrollbar__thumb");
 
 const PAGE_SCROLLBAR = {
-  radius: 22,
-  stroke: 6,
+  radius: 32,
+  stroke: 7,
   inset: 4,
-  thumb: 90,
+  thumb: 80,
   finish: 5,
   scrollPadding: 100,
   trail: 0,
@@ -550,7 +549,10 @@ function syncPageScrollbar() {
 
   readScrollbarCssVars();
 
-  const height = window.innerHeight;
+  const top = document.querySelector(".site-header").getBoundingClientRect().height;
+  const height = Math.max(PAGE_SCROLLBAR.radius * 2, window.innerHeight - top);
+  pageScrollbar.style.top = `${top}px`;
+  pageScrollbar.style.height = `${height}px`;
   pageScrollbar.setAttribute("viewBox", `0 0 ${PAGE_SCROLLBAR.radius * 2} ${height}`);
   pageScrollbar.style.setProperty("--stroke-width", PAGE_SCROLLBAR.stroke);
 
@@ -558,8 +560,8 @@ function syncPageScrollbar() {
   pageScrollbarTrack.setAttribute("d", d);
   pageScrollbarThumb.setAttribute("d", d);
 
-  const trackLength = Math.ceil(pageScrollbarTrack.getTotalLength());
-  PAGE_SCROLLBAR.trackLength = trackLength;
+  const trackLength = pageScrollbarTrack.getTotalLength();
+  PAGE_SCROLLBAR.trackLength = Math.floor(trackLength);
 
   pageScrollbarThumb.setAttribute("d", buildScrollbarTopPath());
   PAGE_SCROLLBAR.cornerLength = Math.ceil(pageScrollbarThumb.getTotalLength());
@@ -567,7 +569,7 @@ function syncPageScrollbar() {
   pageScrollbarThumb.setAttribute("d", d);
 
   document.documentElement.style.setProperty("--page-scrollbar-thumb-size", PAGE_SCROLLBAR.thumb);
-  document.documentElement.style.setProperty("--page-scrollbar-track-length", trackLength);
+  document.documentElement.style.setProperty("--page-scrollbar-track-length", Math.ceil(trackLength));
 
   const scrollable = getScrollableAmount();
   document.documentElement.toggleAttribute("data-page-scrollbar", scrollable > 0);
@@ -577,6 +579,26 @@ function syncPageScrollbar() {
 
 function getScrollableAmount() {
   return Math.max(0, (document.documentElement.scrollHeight || 0) - window.innerHeight);
+}
+
+let scrollbarOverscroll = 0;
+let scrollbarOverscrollTarget = 0;
+let scrollbarLastInput = 0;
+const scrollbarReducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const pageContent = document.querySelector("main");
+
+function bouncePageScrollbar(event) {
+  if (scrollbarReducedMotion.matches || event.ctrlKey || event.deltaY === 0) return;
+  const scrollable = getScrollableAmount();
+  if (scrollable <= 0) return;
+  const atEdge = (window.scrollY <= 1 && event.deltaY < 0)
+    || (window.scrollY >= scrollable - 1 && event.deltaY > 0);
+  if (!atEdge) return;
+  // Native scroll stays clamped; translate content to show the elastic range.
+  const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+  const limit = PAGE_SCROLLBAR.scrollPadding;
+  scrollbarOverscrollTarget = Math.max(-limit, Math.min(limit, scrollbarOverscrollTarget + event.deltaY * unit * 0.4));
+  scrollbarLastInput = performance.now();
 }
 
 function updatePageScrollbarThumb() {
@@ -589,28 +611,28 @@ function updatePageScrollbarThumb() {
   }
 
   const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+  if ((scrollbarOverscroll < 0 && scrollTop > 1)
+    || (scrollbarOverscroll > 0 && scrollTop < scrollable - 1)
+    || scrollbarReducedMotion.matches) {
+    scrollbarOverscroll = scrollbarOverscrollTarget = 0;
+  }
+  if (pageContent) {
+    pageContent.style.translate = scrollbarOverscroll === 0
+      ? ""
+      : `0 ${-scrollbarOverscroll * 0.65}px`;
+  }
   const progress = Math.min(1, Math.max(0, scrollTop / scrollable));
 
   const { thumb, finish, cornerLength, trackLength, scrollPadding } = PAGE_SCROLLBAR;
 
-  const p1 = Math.min(0.5, Math.max(0.01, scrollPadding / scrollable));
-  const p2 = 1 - p1;
-
-  const v0 = thumb - finish;
-  const v1 = -cornerLength;
-  const v2 = -(trackLength - cornerLength - thumb);
-  const v3 = -(trackLength - finish);
-
-  let offset;
-  if (progress <= p1) {
-    const t = progress / p1;
-    offset = v0 + (v1 - v0) * t;
-  } else if (progress <= p2) {
-    const t = (progress - p1) / (p2 - p1);
-    offset = v1 + (v2 - v1) * t;
-  } else {
-    const t = (progress - p2) / (1 - p2);
-    offset = v2 + (v3 - v2) * t;
+  const start = -cornerLength;
+  const end = -(trackLength - cornerLength - thumb);
+  let offset = start + (end - start) * progress;
+  const extension = Math.min(1, Math.abs(scrollbarOverscroll) / scrollPadding);
+  if (scrollbarOverscroll < 0 && scrollTop <= 1) {
+    offset += (thumb - finish - start) * extension;
+  } else if (scrollbarOverscroll > 0 && scrollTop >= scrollable - 1) {
+    offset += (-(trackLength - finish) - end) * extension;
   }
 
   document.documentElement.style.setProperty("--page-scrollbar-offset", offset);
@@ -628,20 +650,39 @@ function schedulePageScrollbarResize() {
 if (pageScrollbar) {
   syncPageScrollbar();
   window.addEventListener("scroll", updatePageScrollbarThumb, { passive: true });
+  window.addEventListener("wheel", bouncePageScrollbar, { passive: true });
   window.addEventListener("resize", schedulePageScrollbarResize);
   const bodyObserver = new ResizeObserver(schedulePageScrollbarResize);
   bodyObserver.observe(document.body);
-
-  // Lenis (smooth scroll) suppresses native scroll events when scrolling
-  // programmatically or via its raf loop, so poll each frame to stay in sync.
-  let lastScrollY = -1;
-  const pollScroll = () => {
-    const y = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-    if (y !== lastScrollY) {
-      lastScrollY = y;
-      updatePageScrollbarThumb();
-    }
-    requestAnimationFrame(pollScroll);
-  };
-  requestAnimationFrame(pollScroll);
+  bodyObserver.observe(document.querySelector(".site-header"));
 }
+
+const lenis = typeof Lenis === "function" ? new Lenis({
+  autoRaf: false,
+  autoToggle: true,
+  anchors: true,
+  allowNestedScroll: true,
+  naiveDimensions: true,
+  stopInertiaOnNavigate: true,
+}) : null;
+
+let lastScrollFrame = 0;
+function animatePageScroll(now) {
+  lenis?.raf(now);
+  const dt = lastScrollFrame ? Math.min((now - lastScrollFrame) / 1000, 0.05) : 0;
+  lastScrollFrame = now;
+  if (now - scrollbarLastInput > 100) scrollbarOverscrollTarget = 0;
+  if (scrollbarReducedMotion.matches || document.hidden) {
+    scrollbarOverscroll = scrollbarOverscrollTarget = 0;
+  }
+  if (scrollbarOverscroll !== 0 || scrollbarOverscrollTarget !== 0) {
+    // Pull and release share Lenis's frame clock, including the thumb movement.
+    scrollbarOverscroll += (scrollbarOverscrollTarget - scrollbarOverscroll) * (1 - Math.exp(-dt * 12));
+    if (scrollbarOverscrollTarget === 0 && Math.abs(scrollbarOverscroll) < 0.1) scrollbarOverscroll = 0;
+    updatePageScrollbarThumb();
+  } else if (pageContent?.style.translate) {
+    updatePageScrollbarThumb();
+  }
+  requestAnimationFrame(animatePageScroll);
+}
+requestAnimationFrame(animatePageScroll);
