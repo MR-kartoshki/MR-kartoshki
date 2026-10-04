@@ -64,9 +64,75 @@ async function loadRepositories(token) {
   };
 }
 
+function contactResponse(body, status = 200, headers = {}) {
+  return Response.json(body, { status, headers: { "Cache-Control": "no-store", ...headers } });
+}
+
+async function handleContact(request, env) {
+  if (request.method !== "POST") {
+    return contactResponse({ error: "Method not allowed." }, 405, { Allow: "POST" });
+  }
+  if (request.headers.get("Origin") !== new URL(request.url).origin) {
+    return contactResponse({ error: "Please send your message from the portfolio website." }, 403);
+  }
+  if (request.headers.get("Content-Type")?.split(";")[0] !== "application/x-www-form-urlencoded") {
+    return contactResponse({ error: "Unsupported form format." }, 415);
+  }
+
+  try {
+    const { success } = await env.CONTACT_RATE_LIMIT.limit({
+      key: request.headers.get("CF-Connecting-IP") || "local",
+    });
+    if (!success) {
+      return contactResponse({ error: "Too many messages. Please try again in a minute." }, 429, { "Retry-After": "60" });
+    }
+
+    // Bound the actual stream; Content-Length can be missing or inaccurate.
+    const reader = request.body?.getReader();
+    if (!reader) return contactResponse({ error: "Please complete the form." }, 400);
+    const decoder = new TextDecoder();
+    let size = 0;
+    let body = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > 128_000) {
+        await reader.cancel();
+        return contactResponse({ error: "Your message is too large." }, 413);
+      }
+      body += decoder.decode(value, { stream: true });
+    }
+    body += decoder.decode();
+    const form = new URLSearchParams(body);
+    if (form.get("_gotcha")) return contactResponse({ success: true });
+    const name = (form.get("name") || "").trim();
+    const email = (form.get("email") || "").trim();
+    const message = (form.get("message") || "").trim();
+    if (!name || name.length > 100 || email.length > 254 ||
+        !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email) ||
+        !message || message.length > 5000) {
+      return contactResponse({ error: "Please enter a name, a valid email, and a message of up to 5,000 characters." }, 400);
+    }
+
+    await env.CONTACT_EMAIL.send({
+      from: { email: "portfolio@iaske.net", name: "MR-Kartoshki Portfolio" },
+      to: "nikita@iaske.net",
+      replyTo: email,
+      subject: "Portfolio contact",
+      text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+    });
+    return contactResponse({ success: true });
+  } catch (error) {
+    console.error(JSON.stringify({ message: "Contact email failed", code: error.code || "UNKNOWN" }));
+    return contactResponse({ error: "Your message could not be sent. Please try again later." }, 503);
+  }
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (url.pathname === "/api/contact") return handleContact(request, env);
     if (url.pathname !== "/api/repos") return env.ASSETS.fetch(request);
     if (request.method !== "GET") {
       return new Response("Method not allowed", { status: 405, headers: { Allow: "GET" } });

@@ -63,13 +63,13 @@ float caustics(vec2 p) {
 void main() {
   vec2 uv = gl_FragCoord.xy / resolution;
   vec2 p = (uv - 0.5) * vec2(resolution.x / resolution.y, 1.0) * 7.0;
-  p /= 1.0 - uv.y * 0.35;
   p += pointer * 0.12;
   float h = height(p);
   vec2 slope = vec2(height(p + vec2(0.045, 0.0)) - h,
                     height(p + vec2(0.0, 0.045)) - h) / 0.045;
   vec3 normal = normalize(vec3(-slope * 0.32, 1.0));
-  vec3 view = normalize(vec3((uv.x - 0.5) * 0.3, -0.65 - uv.y * 0.6, 1.0));
+  // View the surface from above, like the page is resting over a pool.
+  vec3 view = vec3(0.0, 0.0, 1.0);
   float facing = max(dot(normal, view), 0.0);
   float waterDepth = 0.8 + uv.y * 0.9;
   // The floor shifts beneath the surface; reflections move with the normal.
@@ -90,10 +90,9 @@ void main() {
   float fresnel = 0.02 + 0.98 * pow(1.0 - facing, 5.0);
   vec3 reflection = mix(vec3(0.035, 0.075, 0.11), vec3(0.12, 0.22, 0.26), sky);
   color = mix(color, reflection, min(0.45, fresnel + sky * 0.08));
-  vec3 halfway = normalize(view + normalize(vec3(-0.3, 0.6, 1.5)));
-  float specular = pow(max(dot(normal, halfway), 0.0), 8.0);
-  color += vec3(0.018, 0.032, 0.038) * specular * glow;
-  float glint = pow(max(dot(normal, halfway), 0.0), 28.0);
+  // A broad overhead reflection avoids thin streaks along the wave crests.
+  float reflectionDistance = dot(reflected.xy, reflected.xy);
+  float glint = exp(-reflectionDistance * 1.8);
   color += vec3(0.15, 0.18, 0.18) * glint * glow;
   color *= 0.72 + 0.28 * (1.0 - smoothstep(0.1, 0.8, length(uv - 0.5)));
   gl_FragColor = vec4(color, 1.0);

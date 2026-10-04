@@ -29,6 +29,7 @@ const cooldownStorageKey = "contactFormLastSentAt";
 const cooldownTickMs = 250;
 
 let contactCooldownIntervalId;
+let contactSending = false;
 
 const updatedDateFormatter = new Intl.DateTimeFormat(undefined, {
   year: "numeric",
@@ -100,6 +101,12 @@ function updateContactSubmitButton(remainingMs) {
     return;
   }
 
+  if (contactSending) {
+    contactSubmitButton.disabled = true;
+    contactSubmitButton.textContent = "Sending...";
+    return;
+  }
+
   if (remainingMs > 0) {
     contactSubmitButton.disabled = true;
     contactSubmitButton.classList.add("button--cooldown");
@@ -132,7 +139,6 @@ function startContactCooldown() {
     if (remainingMs <= 0) {
       window.clearInterval(contactCooldownIntervalId);
       contactCooldownIntervalId = undefined;
-      setContactFormMessage("");
     }
   }, cooldownTickMs);
 }
@@ -140,7 +146,9 @@ function startContactCooldown() {
 if (contactForm && contactSubmitButton) {
   startContactCooldown();
 
-  contactForm.addEventListener("submit", (event) => {
+  contactForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (contactSending) return;
     const remainingMs = getRemainingCooldownMs();
 
     if (remainingMs > 0) {
@@ -154,10 +162,36 @@ if (contactForm && contactSubmitButton) {
       return;
     }
 
-    localStorage.setItem(cooldownStorageKey, String(Date.now()));
+    const body = new URLSearchParams(new FormData(contactForm));
+    contactSending = true;
     triggerSendButtonReaction("button--pressed");
     setContactFormMessage("Sending your message...");
-    startContactCooldown();
+    updateContactSubmitButton(0);
+    try {
+      const response = await fetch(contactForm.action, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body,
+        signal: AbortSignal.timeout(20_000),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Your message could not be sent. Please try again.");
+      }
+      contactForm.reset();
+      localStorage.setItem(cooldownStorageKey, String(Date.now()));
+      setContactFormMessage("Your message was sent. Thanks for getting in touch!");
+    } catch (error) {
+      setContactFormMessage(
+        error.name === "TimeoutError" || error instanceof TypeError
+          ? "Could not reach the server. Please try again shortly."
+          : error.message,
+        "warning"
+      );
+    } finally {
+      contactSending = false;
+      startContactCooldown();
+    }
   });
 }
 

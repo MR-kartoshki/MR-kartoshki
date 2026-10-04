@@ -120,22 +120,20 @@
         </div>
 
         <div id="contactFormPanel" hidden>
-          <form class="contact-form" action="https://formspree.io/f/xlganvzd" method="POST">
-            <input type="hidden" name="_subject" value="Portfolio contact from MR-Kartoshki">
-
+          <form class="contact-form" action="/api/contact" method="POST">
             <label class="control" for="contactName">
               <span>Name</span>
-              <input id="contactName" type="text" name="name" autocomplete="name" placeholder="Your name" required>
+              <input id="contactName" type="text" name="name" maxlength="100" autocomplete="name" placeholder="Your name" required>
             </label>
 
             <label class="control" for="contactEmail">
               <span>Email</span>
-              <input id="contactEmail" type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+              <input id="contactEmail" type="email" name="email" maxlength="254" autocomplete="email" placeholder="you@example.com" required>
             </label>
 
             <label class="control" for="contactMessage">
               <span>Message</span>
-              <textarea id="contactMessage" name="message" rows="6" placeholder="Tell me what you need help with." required></textarea>
+              <textarea id="contactMessage" name="message" maxlength="5000" rows="6" placeholder="Tell me what you need help with." required></textarea>
             </label>
 
             <input class="contact-honeypot" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">

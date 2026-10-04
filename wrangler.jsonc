@@ -27,5 +27,15 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "send_email": [{
+    "name": "CONTACT_EMAIL",
+    "allowed_destination_addresses": ["nikita@iaske.net"],
+    "allowed_sender_addresses": ["portfolio@iaske.net"]
+  }],
+  "ratelimits": [{
+    "name": "CONTACT_RATE_LIMIT",
+    "namespace_id": "1001",
+    "simple": { "limit": 3, "period": 60 }
+  }],
   "main": "worker.js"
 }

@@ -85,3 +85,70 @@ test("static requests use the asset binding and API rejects writes", async (t) =
   assert.equal(await (await worker.fetch(new Request("https://portfolio.example/"), env, ctx)).text(), "portfolio");
   assert.equal((await worker.fetch(new Request(request(), { method: "POST" }), env, ctx)).status, 405);
 });
+
+function contactRequest(fields = {}, options = {}) {
+  return new Request("https://portfolio.example/api/contact", {
+    method: "POST",
+    headers: { Origin: "https://portfolio.example" },
+    body: new URLSearchParams({ name: "Visitor", email: "visitor@example.com", message: "Hello", ...fields }),
+    ...options,
+  });
+}
+
+function contactEnv() {
+  const sent = [];
+  return {
+    sent,
+    CONTACT_RATE_LIMIT: { limit: async () => ({ success: true }) },
+    CONTACT_EMAIL: { send: async (email) => sent.push(email) },
+  };
+}
+
+test("contact delivers to the fixed recipient with visitor reply-to", async () => {
+  const env = contactEnv();
+  const response = await worker.fetch(contactRequest({ to: "other@example.com", message: " <Hello> " }), env);
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { success: true });
+  assert.equal(response.headers.get("Cache-Control"), "no-store");
+  assert.equal(env.sent.length, 1);
+  assert.equal(env.sent[0].to, "nikita@iaske.net");
+  assert.equal(env.sent[0].from.email, "portfolio@iaske.net");
+  assert.equal(env.sent[0].replyTo, "visitor@example.com");
+  assert.equal(env.sent[0].text, "Name: Visitor\nEmail: visitor@example.com\n\n<Hello>");
+});
+
+test("contact rejects invalid fields, foreign origins, methods, and oversized bodies", async () => {
+  const env = contactEnv();
+  for (const fields of [{ name: " " }, { email: "bad\r\n@example.com" }, { message: " " }, { message: "x".repeat(5001) }]) {
+    assert.equal((await worker.fetch(contactRequest(fields), env)).status, 400);
+  }
+  assert.equal((await worker.fetch(contactRequest({}, { headers: { Origin: "https://other.example" } }), env)).status, 403);
+  assert.equal((await worker.fetch(new Request("https://portfolio.example/api/contact"), env)).status, 405);
+  assert.equal((await worker.fetch(contactRequest({}, { body: "x".repeat(128001), headers: {
+    Origin: "https://portfolio.example", "Content-Type": "application/x-www-form-urlencoded",
+  } }), env)).status, 413);
+  assert.equal((await worker.fetch(contactRequest({}, { body: "{}", headers: {
+    Origin: "https://portfolio.example", "Content-Type": "application/json",
+  } }), env)).status, 415);
+  assert.equal(env.sent.length, 0);
+});
+
+test("honeypot and rate limit stop email delivery", async () => {
+  const env = contactEnv();
+  assert.equal((await worker.fetch(contactRequest({ _gotcha: "bot" }), env)).status, 200);
+  env.CONTACT_RATE_LIMIT.limit = async () => ({ success: false });
+  const response = await worker.fetch(contactRequest(), env);
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get("Retry-After"), "60");
+  assert.equal(env.sent.length, 0);
+});
+
+test("email delivery errors do not report success or expose submission data", async (t) => {
+  t.mock.method(console, "error", () => {});
+  const env = contactEnv();
+  env.CONTACT_EMAIL.send = async () => { throw Object.assign(new Error("private content"), { code: "E_DELIVERY_FAILED" }); };
+  const response = await worker.fetch(contactRequest(), env);
+  assert.equal(response.status, 503);
+  assert.equal((await response.json()).success, undefined);
+  assert.ok(!JSON.stringify(console.error.mock.calls).includes("private content"));
+});
