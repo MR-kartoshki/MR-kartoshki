@@ -3,26 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="MR-Kartoshki portfolio: Java-focused developer building practical tools and Minecraft mods.">
+  <meta name="description" content="Nikita / MR-Kartoshki — Minecraft mods, Linux projects, and bad ideas taken too far.">
   <meta name="theme-color" content="#0b1220">
-  <link rel="canonical" href="https://mr-kartoshki.github.io/MR-kartoshki/">
+  <link rel="canonical" href="https://portfolio.iaske.net/">
   <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="MR-Kartoshki">
-  <meta property="og:description" content="IT student and developer focused on practical tools and Minecraft modding.">
-  <meta property="og:url" content="https://mr-kartoshki.github.io/MR-kartoshki/">
+  <meta property="og:description" content="Minecraft mods, Linux projects, and bad ideas taken too far.">
+  <meta property="og:url" content="https://portfolio.iaske.net/">
   <meta property="og:site_name" content="MR-Kartoshki">
   <meta property="og:image" content="https://avatars.githubusercontent.com/MR-kartoshki?size=512">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MR-Kartoshki">
-  <meta name="twitter:description" content="IT student and developer focused on practical tools and Minecraft modding.">
+  <meta name="twitter:description" content="Minecraft mods, Linux projects, and bad ideas taken too far.">
   <meta name="twitter:image" content="https://avatars.githubusercontent.com/MR-kartoshki?size=512">
   <title>MR-Kartoshki</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
+  <script src="home.js" type="module"></script>
   <script src="water.js" type="module"></script>
 
   <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.25/dist/lenis.css">
@@ -33,10 +34,12 @@
   <header class="site-header">
     <nav class="nav container" aria-label="Main navigation">
       <a class="brand" href="#home">MR-Kartoshki</a>
-      <ul class="nav-links">
-        <li><a href="#home">Home</a></li>
+      <button class="nav-menu button" type="button" aria-expanded="false" aria-controls="navLinks">Menu</button>
+      <ul id="navLinks" class="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#projects">Projects</a></li>
+        <li><a href="#bad-apple">Bad Apple</a></li>
+        <li><a href="#repositories">Repositories</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -45,13 +48,12 @@
   <main>
     <section id="home" class="section hero">
       <div class="container">
-        <h1>MR-Kartoshki</h1>
-        <p class="intro">
-          IT student and developer focused on practical tools and Minecraft modding.
-        </p>
+        <p class="eyebrow">Nikita / MR-Kartoshki</p>
+        <h1>I build things that probably shouldn’t exist.</h1>
+        <p class="intro">Minecraft mods, Linux projects, and bad ideas taken too far.</p>
         <div class="hero-actions">
-          <a id="homeGithubLink" class="button" href="#" target="_blank" rel="noopener noreferrer">Visit GitHub</a>
-          <a class="button" href="https://buymeacoffee.com/MRkartoshki" target="_blank" rel="noopener noreferrer">Support me</a>
+          <a class="button" href="#projects">Explore Projects <span aria-hidden="true">↓</span></a>
+          <a id="homeGithubLink" class="button button--secondary" href="https://github.com/MR-kartoshki" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </div>
     </section>
@@ -59,64 +61,188 @@
     <section id="about" class="section">
       <div class="container">
         <h2>About</h2>
-        <p>
-          I write Java, mostly for Minecraft mods. Occasionally Python or Rust when something needs it. Projects start when something annoys me enough to fix it or when a friend says "Wouldn't it be funny if..."
-        </p>
+        <p>I’m Nikita, an IT student in Vienna who mostly builds open-source software, Minecraft mods, and whatever idea sounds interesting enough to spend way too much time on. Projects usually start because something annoys me enough to fix it, or because someone says, ‘Wouldn’t it be funny if...?’</p>
+        <p class="about-meta">Vienna · IT student · Java · Rust · Python · Open source · Modding</p>
       </div>
     </section>
 
-    <section id="projects" class="section">
+    <section id="projects" class="section featured-section">
       <div class="container">
         <h2>Projects</h2>
-        <div class="controls" aria-label="Project filters">
-          <label class="control control--search">
-            <span>Search</span>
-            <input id="searchInput" type="search" placeholder="Search repository name" autocomplete="off">
-          </label>
+        <p class="section-subtitle">A few things I’m particularly proud of.</p>
+      </div>
+      <div class="project-carousel" role="region" aria-roledescription="carousel" aria-label="Featured projects" tabindex="0">
+        <div class="carousel-track">
+          <article class="featured-card" data-project="rawlands" role="group" aria-roledescription="slide" aria-label="1 of 3: Rawlands">
+            <img class="featured-image" src="media/rawlands-1100.webp" srcset="media/rawlands-600.webp 600w, media/rawlands-1100.webp 1100w" sizes="(max-width: 700px) 90vw, min(80vw, 1000px)" alt="Rawlands Dead Forest biome with bare trees and rugged terrain" width="1100" height="619" loading="lazy" decoding="async">
+            <div class="featured-copy">
+              <h3>Rawlands</h3>
+              <p>A Minecraft biome mod adding custom environments, blocks and world-generation features.</p>
+              <p class="tech-line">Java · Fabric · Minecraft</p>
+              <p class="featured-stats" data-stats="rawlands" hidden></p>
+              <div class="project-links">
+                <a class="button" href="https://github.com/MR-kartoshki/Rawlands" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a class="button" href="https://modrinth.com/mod/rawlands" target="_blank" rel="noopener noreferrer">Modrinth</a>
+              </div>
+            </div>
+          </article>
+          <article class="featured-card" data-project="frog-linux" role="group" aria-roledescription="slide" aria-label="2 of 3: Frog Linux">
+            <img class="featured-image" src="media/frog-linux-1100.webp" srcset="media/frog-linux-600.webp 600w, media/frog-linux-1100.webp 1100w" sizes="(max-width: 700px) 90vw, min(80vw, 1000px)" alt="Frog Linux KDE Plasma desktop" width="1100" height="619" loading="lazy" decoding="async">
+            <div class="featured-copy">
+              <h3>Frog Linux</h3>
+              <p>An opinionated Arch Linux spin with a custom visual identity, CachyOS kernel, installer tooling and curated defaults.</p>
+              <p class="tech-line">Arch Linux · Shell · Calamares · Btrfs</p>
+              <p class="featured-stats" data-stats="frog-linux" hidden></p>
+              <div class="project-links">
+                <a class="button" href="https://frog-linux.com/" target="_blank" rel="noopener noreferrer">Website</a>
+                <a class="button" href="https://github.com/Frog-Linux-repos/Frog-Linux" target="_blank" rel="noopener noreferrer">GitHub</a>
+              </div>
+            </div>
+          </article>
+          <article class="featured-card" data-project="fling" role="group" aria-roledescription="slide" aria-label="3 of 3: Fling">
+            <img class="featured-image" src="media/fling-1100.webp" srcset="media/fling-600.webp 600w, media/fling-1100.webp 1100w" sizes="(max-width: 700px) 90vw, min(80vw, 1000px)" alt="Fling mod artwork showing Steve throwing a golden apple" width="1100" height="619" loading="lazy" decoding="async">
+            <div class="featured-copy">
+              <h3>Fling</h3>
+              <p>A Minecraft mod that lets you physically throw, catch and interact with dropped items.</p>
+              <p class="tech-line">Java · Fabric · Minecraft</p>
+              <p class="featured-stats" data-stats="fling" hidden></p>
+              <div class="project-links">
+                <a class="button" href="https://github.com/MR-kartoshki/Fling" target="_blank" rel="noopener noreferrer">GitHub</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="carousel-controls container">
+        <button class="button carousel-arrow" type="button" data-direction="-1" aria-label="Previous project">←</button>
+        <div class="carousel-dots" aria-label="Choose a project">
+          <button type="button" aria-label="Show Rawlands" aria-current="true" data-slide="0"></button>
+          <button type="button" aria-label="Show Frog Linux" data-slide="1"></button>
+          <button type="button" aria-label="Show Fling" data-slide="2"></button>
+        </div>
+        <button class="button carousel-arrow" type="button" data-direction="1" aria-label="Next project">→</button>
+        <p id="carouselStatus" class="sr-only" aria-live="polite">Rawlands, project 1 of 3</p>
+      </div>
+    </section>
 
-          <label class="control">
-            <span>Language</span>
-            <select id="languageFilter">
-              <option value="all">All languages</option>
-            </select>
-          </label>
+    <section id="bad-apple" class="section">
+      <div class="container">
+        <h2>Bad Apple, but...</h2>
+        <p class="section-subtitle">Recreating the same video using increasingly inappropriate formats.</p>
+      </div>
+      <div class="project-carousel" role="region" aria-roledescription="carousel" aria-label="Bad Apple videos" tabindex="0">
+        <div class="carousel-track">
+          <article class="video-card featured-card" role="group" aria-roledescription="slide" aria-label="1 of 3: QR code">
+            <div class="video-stage">
+              <video poster="media/qr-final-poster.webp" preload="none" playsinline tabindex="0" data-full="/media/videos/qr-final.mp4" data-preview="/media/videos/qr-final-preview.mp4" aria-label="Bad Apple, but every frame is a valid QR code"></video>
+              <button class="video-play" type="button" aria-label="Play Bad Apple, but every frame is a valid QR code"><span aria-hidden="true">▶</span></button>
+            </div>
+            <div class="video-copy featured-copy">
+              <h3>Bad Apple, but every frame is a valid QR code</h3>
+              <p>Every individual frame is a fully scannable QR code that links back to that exact frame.</p>
+              <p class="tech-line">~2,600 QR codes · 12 FPS</p>
+              <p class="video-status" role="status"></p>
+            </div>
+          </article>
+          <article class="video-card featured-card" role="group" aria-roledescription="slide" aria-label="2 of 3: Bézier curves">
+            <div class="video-stage">
+              <video poster="media/bezier-final-poster.webp" preload="none" playsinline tabindex="0" data-full="/media/videos/bezier-final.mp4" data-preview="/media/videos/bezier-final-preview.mp4" aria-label="Bad Apple, but it’s only Bézier curves"></video>
+              <button class="video-play" type="button" aria-label="Play Bad Apple, but it’s only Bézier curves"><span aria-hidden="true">▶</span></button>
+            </div>
+            <div class="video-copy featured-copy">
+              <h3>Bad Apple, but it’s only Bézier curves</h3>
+              <p>Each frame is reconstructed from a fixed set of Bézier curves approximating the original silhouette.</p>
+              <p class="tech-line">64 curves per frame</p>
+              <p class="video-status" role="status"></p>
+            </div>
+          </article>
+          <article class="video-card featured-card" role="group" aria-roledescription="slide" aria-label="3 of 3: Sudoku">
+            <div class="video-stage">
+              <video poster="media/sudoku-final-poster.webp" preload="none" playsinline tabindex="0" data-full="/media/videos/sudoku-final.mp4" data-preview="/media/videos/sudoku-final-preview.mp4" aria-label="Bad Apple, but every frame is a valid Sudoku"></video>
+              <button class="video-play" type="button" aria-label="Play Bad Apple, but every frame is a valid Sudoku"><span aria-hidden="true">▶</span></button>
+            </div>
+            <div class="video-copy featured-copy">
+              <h3>Bad Apple, but every frame is a valid Sudoku</h3>
+              <p>Every frame is represented as a valid uniquely solvable Sudoku puzzle while still approximating the video.</p>
+              <p class="tech-line"></p>
+              <p class="video-status" role="status"></p>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="carousel-controls container">
+        <button class="button carousel-arrow" type="button" data-direction="-1" aria-label="Previous video">←</button>
+        <div class="carousel-dots" aria-label="Choose a video">
+          <button type="button" aria-label="Show QR code video" aria-current="true" data-slide="0"></button>
+          <button type="button" aria-label="Show Bézier curves video" data-slide="1"></button>
+          <button type="button" aria-label="Show Sudoku video" data-slide="2"></button>
+        </div>
+        <button class="button carousel-arrow" type="button" data-direction="1" aria-label="Next video">→</button>
+        <p class="sr-only" aria-live="polite"></p>
+      </div>
+    </section>
 
-          <label class="control">
-            <span>Sort by</span>
-            <select id="sortSelect">
-              <option value="pushed">Contributed</option>
-              <option value="created">Created</option>
-              <option value="stars">Stars</option>
-              <option value="forks">Forks</option>
-            </select>
-          </label>
+    <section id="repositories" class="section">
+      <div class="container">
+        <div class="repository-intro">
+          <h2>Repositories</h2>
+          <p id="repositoryCount" class="section-subtitle">Public projects on GitHub.</p>
+          <button id="repositoryToggle" class="button" type="button" aria-expanded="false" aria-controls="repositoryPanel">Browse repositories ↓</button>
+        </div>
+        <div id="repositoryPanel" class="expand-panel" inert>
+          <div class="expand-panel__inner">
+            <div class="controls" aria-label="Repository filters">
+              <label class="control control--search">
+                <span>Search</span>
+                <input id="searchInput" type="search" placeholder="Search repository name" autocomplete="off">
+              </label>
 
-          <div class="controls-toggles">
-            <label class="toggle">
-              <input id="hideForksToggle" type="checkbox" checked>
-              <span>Hide forks</span>
-            </label>
+              <label class="control">
+                <span>Language</span>
+                <select id="languageFilter">
+                  <option value="all">All languages</option>
+                </select>
+              </label>
 
-            <label class="toggle">
-              <input id="reverseSortToggle" type="checkbox">
-              <span>Reverse order</span>
-            </label>
+              <label class="control">
+                <span>Sort by</span>
+                <select id="sortSelect">
+                  <option value="pushed">Contributed</option>
+                  <option value="created">Created</option>
+                  <option value="stars">Stars</option>
+                  <option value="forks">Forks</option>
+                </select>
+              </label>
+
+              <div class="controls-toggles">
+                <label class="toggle">
+                  <input id="hideForksToggle" type="checkbox" checked>
+                  <span>Hide forks</span>
+                </label>
+
+                <label class="toggle">
+                  <input id="reverseSortToggle" type="checkbox">
+                  <span>Reverse order</span>
+                </label>
+              </div>
+            </div>
+
+            <p id="statusMessage" class="status" role="status" aria-live="polite"></p>
+            <div id="projectsGrid" class="projects-grid" aria-live="polite"></div>
           </div>
         </div>
-
-        <p id="statusMessage" class="status" role="status" aria-live="polite"></p>
-        <div id="projectsGrid" class="projects-grid" aria-live="polite"></div>
       </div>
     </section>
 
     <section id="contact" class="section">
       <div class="container">
-        <h2>Contact</h2>
+        <h2>Want to talk?</h2>
         <p>Find me on GitHub, Discord, or send me a direct message here.</p>
         <div class="contact-links">
+          <a class="button" href="https://buymeacoffee.com/MRkartoshki" target="_blank" rel="noopener noreferrer">Support me</a>
           <a id="contactGithubLink" class="button" href="#" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a class="button" href="https://discord.com/users/1080867173213417503" target="_blank" rel="noopener noreferrer">Discord</a>
-          <button id="contactFormToggle" class="button" type="button" aria-controls="contactFormPanel" aria-expanded="false">Send email</button>
+          <button id="contactFormToggle" class="button" type="button" aria-controls="contactFormPanel" aria-expanded="false">Send a message</button>
         </div>
 
         <div id="contactFormPanel" hidden>
@@ -144,6 +270,11 @@
       </div>
     </section>
   </main>
+
+  <footer class="site-footer container">
+    <p>© 2026 Nikita · MR-Kartoshki</p>
+    <a href="https://github.com/MR-kartoshki/MR-kartoshki" target="_blank" rel="noopener noreferrer">Portfolio source ↗</a>
+  </footer>
 
   <svg class="page-scrollbar" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
     <path class="page-scrollbar__track" fill="none" stroke-linecap="round"></path>

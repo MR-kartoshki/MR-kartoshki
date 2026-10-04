@@ -152,3 +152,65 @@ test("email delivery errors do not report success or expose submission data", as
   assert.equal((await response.json()).success, undefined);
   assert.ok(!JSON.stringify(console.error.mock.calls).includes("private content"));
 });
+
+function mediaEnv(bytes = new Uint8Array([0, 1, 2, 3, 4, 5])) {
+  return { MEDIA: {
+    head: async () => ({ size: bytes.length, httpEtag: '"video-v1"' }),
+    get: async (_, options) => ({ body: options?.range
+      ? bytes.slice(options.range.offset, options.range.offset + options.range.length)
+      : bytes }),
+  } };
+}
+
+test("video endpoint streams full videos and supports seeking ranges", async (t) => {
+  const { ctx, pending } = setup(t);
+  const env = mediaEnv();
+  const url = "https://portfolio.example/media/videos/qr-final.mp4";
+  const full = await worker.fetch(new Request(url), env, ctx);
+  assert.equal(full.status, 200);
+  assert.equal(full.headers.get("Accept-Ranges"), "bytes");
+  assert.equal(full.headers.get("Content-Length"), "6");
+  assert.deepEqual([...new Uint8Array(await full.arrayBuffer())], [0, 1, 2, 3, 4, 5]);
+  await Promise.all(pending);
+  for (const [range, expected, contentRange] of [
+    ["bytes=1-3", [1, 2, 3], "bytes 1-3/6"],
+    ["bytes=4-", [4, 5], "bytes 4-5/6"],
+    ["bytes=-2", [4, 5], "bytes 4-5/6"],
+  ]) {
+    const response = await worker.fetch(new Request(url, { headers: { Range: range } }), env, ctx);
+    assert.equal(response.status, 206);
+    assert.equal(response.headers.get("Content-Range"), contentRange);
+    assert.deepEqual([...new Uint8Array(await response.arrayBuffer())], expected);
+  }
+});
+
+test("video endpoint handles HEAD, invalid ranges, validators, and unknown paths", async (t) => {
+  const { ctx } = setup(t);
+  const env = mediaEnv();
+  const url = "https://portfolio.example/media/videos/qr-final.mp4";
+  const head = await worker.fetch(new Request(url, { method: "HEAD" }), env, ctx);
+  assert.equal(head.status, 200);
+  assert.equal(head.headers.get("Content-Length"), "6");
+  assert.equal(await head.text(), "");
+  for (const range of ["bytes=9-", "bytes=-0", "bytes=3-1", "bytes=0-1,3-4", "garbage"]) {
+    assert.equal((await worker.fetch(new Request(url, { headers: { Range: range } }), env, ctx)).status, 416);
+  }
+  assert.equal((await worker.fetch(new Request(url, { headers: { "If-None-Match": '"video-v1"' } }), env, ctx)).status, 304);
+  assert.equal((await worker.fetch(new Request(url, { headers: { Range: "bytes=1-3", "If-Range": '"old"' } }), env, ctx)).status, 200);
+  assert.equal((await worker.fetch(new Request(url, { method: "POST" }), env, ctx)).status, 405);
+  assert.equal((await worker.fetch(new Request(url.replace("qr-final.mp4", "source.zip")), env, ctx)).status, 404);
+});
+
+test("featured metadata caches curated stats and tolerates missing releases", async (t) => {
+  const { ctx, pending, writes } = setup(t);
+  t.mock.method(console, "warn", () => {});
+  fetch.mock.mockImplementation(async (url) => {
+    if (url.endsWith("/rawlands")) return Response.json({ downloads: 1234 });
+    if (url.endsWith("/version")) return Response.json([{ version_type: "release", version_number: "1.5.0" }]);
+    return new Response(null, { status: 404 });
+  });
+  const response = await worker.fetch(new Request("https://portfolio.example/api/featured?ignored=1"), {}, ctx);
+  assert.deepEqual(await response.json(), { rawlands: "1,234 downloads · Latest: 1.5.0" });
+  await Promise.all(pending);
+  assert.equal(writes[0].key.url, "https://portfolio.example/api/featured");
+});

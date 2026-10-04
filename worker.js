@@ -64,6 +64,92 @@ async function loadRepositories(token) {
   };
 }
 
+async function featuredMetadata(request, env, ctx) {
+  if (request.method !== "GET") return new Response("Method not allowed", { status: 405, headers: { Allow: "GET" } });
+  const key = new Request(`${new URL(request.url).origin}/api/featured`);
+  const cached = await caches.default.match(key);
+  if (cached) return cached;
+  const result = {};
+  await Promise.all([
+    (async () => {
+      try {
+        const options = { headers: { "User-Agent": "mr-kartoshki-portfolio" }, signal: AbortSignal.timeout(8000) };
+        const [project, versions] = await Promise.all([
+          fetch("https://api.modrinth.com/v2/project/rawlands", options),
+          fetch("https://api.modrinth.com/v2/project/rawlands/version", options),
+        ]);
+        if (!project.ok || !versions.ok) return;
+        const data = await project.json();
+        const releases = await versions.json();
+        const latest = releases.find((release) => release.version_type === "release");
+        result.rawlands = `${Number(data.downloads).toLocaleString("en-US")} downloads${latest ? ` · Latest: ${latest.version_number}` : ""}`;
+      } catch (error) {
+        console.warn(JSON.stringify({ message: "Rawlands metadata unavailable", error: error.message }));
+      }
+    })(),
+    (async () => {
+      try {
+        const tags = await githubJson("/repos/Frog-Linux-repos/Frog-Linux/tags?per_page=1", env.GITHUB_TOKEN);
+        if (tags.length) result["frog-linux"] = `Latest tag: ${tags[0].name}`;
+      } catch (error) {
+        console.warn(JSON.stringify({ message: "Frog Linux metadata unavailable", error: error.message }));
+      }
+    })(),
+  ]);
+  const response = Response.json(result, { headers: { "Cache-Control": "public, max-age=600" } });
+  ctx.waitUntil(caches.default.put(key, response.clone()));
+  return response;
+}
+
+const videoFiles = new Set(["qr-final.mp4", "qr-final-preview.mp4", "bezier-final.mp4", "bezier-final-preview.mp4", "sudoku-final.mp4", "sudoku-final-preview.mp4"]);
+
+async function serveVideo(request, env, ctx) {
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    return new Response("Method not allowed", { status: 405, headers: { Allow: "GET, HEAD" } });
+  }
+  const url = new URL(request.url);
+  const filename = url.pathname.slice("/media/videos/".length);
+  if (!videoFiles.has(filename)) return new Response("Not found", { status: 404 });
+  const key = new Request(`${url.origin}${url.pathname}`);
+  // Cache API can satisfy browser byte ranges from an already cached full response.
+  const cached = await caches.default.match(new Request(key, { headers: request.headers }));
+  if (cached) return request.method === "HEAD" ? new Response(null, cached) : cached;
+  const objectKey = `bad-apple/${filename}`;
+  const metadata = await env.MEDIA.head(objectKey);
+  if (!metadata) return new Response("Not found", { status: 404 });
+  const headers = new Headers({
+    "Content-Type": "video/mp4",
+    "Accept-Ranges": "bytes",
+    "Cache-Control": "public, max-age=86400",
+    ETag: metadata.httpEtag,
+    "Content-Length": String(metadata.size),
+  });
+  if (request.headers.get("If-None-Match") === metadata.httpEtag) return new Response(null, { status: 304, headers });
+  let range;
+  const rangeHeader = request.headers.get("Range");
+  const ifRange = request.headers.get("If-Range");
+  if (rangeHeader && (!ifRange || ifRange === metadata.httpEtag)) {
+    const match = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader);
+    if (match && (match[1] || match[2])) {
+      const start = match[1] ? Number(match[1]) : Math.max(0, metadata.size - Number(match[2]));
+      const end = match[1] && match[2] ? Math.min(Number(match[2]), metadata.size - 1) : metadata.size - 1;
+      if (Number.isSafeInteger(start) && Number.isSafeInteger(end) && start <= end && start < metadata.size) {
+        range = { offset: start, length: end - start + 1 };
+      }
+    }
+    if (!range) return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${metadata.size}` } });
+    headers.set("Content-Range", `bytes ${range.offset}-${range.offset + range.length - 1}/${metadata.size}`);
+    headers.set("Content-Length", String(range.length));
+  }
+  if (request.method === "HEAD") return new Response(null, { status: range ? 206 : 200, headers });
+  const object = await env.MEDIA.get(objectKey, range ? { range } : undefined);
+  if (!object) return new Response("Not found", { status: 404 });
+  const response = new Response(object.body, { status: range ? 206 : 200, headers });
+  // Cache small previews; teeing a full video can buffer too much for slow clients.
+  if (!range && filename.endsWith("-preview.mp4")) ctx.waitUntil(caches.default.put(key, response.clone()));
+  return response;
+}
+
 function contactResponse(body, status = 200, headers = {}) {
   return Response.json(body, { status, headers: { "Cache-Control": "no-store", ...headers } });
 }
@@ -132,6 +218,8 @@ async function handleContact(request, env) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith("/media/videos/")) return serveVideo(request, env, ctx);
+    if (url.pathname === "/api/featured") return featuredMetadata(request, env, ctx);
     if (url.pathname === "/api/contact") return handleContact(request, env);
     if (url.pathname !== "/api/repos") return env.ASSETS.fetch(request);
     if (request.method !== "GET") {

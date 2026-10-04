@@ -47,14 +47,14 @@ if (contactFormToggle && contactFormPanel) {
     if (isHidden) {
       contactFormPanel.removeAttribute("hidden");
       contactFormToggle.setAttribute("aria-expanded", "true");
-      contactFormToggle.textContent = "Hide email form";
+      contactFormToggle.textContent = "Hide message form";
       contactNameInput?.focus();
       return;
     }
 
     contactFormPanel.setAttribute("hidden", "");
     contactFormToggle.setAttribute("aria-expanded", "false");
-    contactFormToggle.textContent = "Send email";
+    contactFormToggle.textContent = "Send a message";
   });
 }
 
@@ -482,6 +482,7 @@ function applyRepositories(data) {
   state.repoLanguages = data.repoLanguages;
   state.hasIncompleteLanguageData = data.hasIncompleteLanguageData;
   updateLanguageFilterOptions(state.repos);
+  document.getElementById("repositoryCount").textContent = `${state.repos.length} public repositories on GitHub.`;
   renderProjects();
 }
 

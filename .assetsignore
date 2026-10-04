@@ -6,3 +6,7 @@
 !favicon.png
 !favicon.svg
 !apple-touch-icon.png
+
+!home.js
+!media/
+!media/**
