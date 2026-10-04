@@ -111,7 +111,10 @@ export function initWater(canvas) {
   const motion = matchMedia("(prefers-reduced-motion: reduce)");
   const coarse = matchMedia("(pointer: coarse)");
   const small = matchMedia("(max-width: 700px)");
-  const lowPower = coarse.matches || small.matches || (navigator.hardwareConcurrency || 4) <= 4;
+  let limited = (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4)
+    || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4)
+    || navigator.connection?.saveData === true;
+  const lowPower = coarse.matches || small.matches || limited;
   const shaders = [];
   const program = gl.createProgram();
   let buffer;
@@ -121,6 +124,8 @@ export function initWater(canvas) {
   let elapsed = 0;
   let lastFrame = 0;
   let lastTick = 0;
+  let samples = 0;
+  let slowFrames = 0;
   let pointerX = 0;
   let pointerY = 0;
   let targetX = 0;
@@ -167,7 +172,7 @@ export function initWater(canvas) {
   const resolution = gl.getUniformLocation(program, "resolution");
   const time = gl.getUniformLocation(program, "time");
   const pointer = gl.getUniformLocation(program, "pointer");
-  const interval = 1000 / 30;
+  let interval = 1000 / (limited ? 20 : 30);
 
   function draw() {
     if (disposed || lost) return;
@@ -180,11 +185,11 @@ export function initWater(canvas) {
   function resize() {
     if (disposed || lost) return;
     const mobile = lowPower || small.matches || coarse.matches;
-    const scale = Math.min(devicePixelRatio || 1, 1.5) * (mobile ? 0.5 : 0.65);
+    const scale = Math.min(devicePixelRatio || 1, 1.5) * (limited ? 0.35 : mobile ? 0.5 : 0.65);
     // Bound total fragment work even on large desktop displays.
     const width = innerWidth;
     const height = innerHeight;
-    const ratio = Math.min(scale, Math.sqrt((mobile ? 450_000 : 1_200_000) / (width * height)));
+    const ratio = Math.min(scale, Math.sqrt((limited ? 180_000 : mobile ? 450_000 : 1_200_000) / (width * height)));
     canvas.width = Math.max(1, Math.round(width * ratio));
     canvas.height = Math.max(1, Math.round(height * ratio));
     gl.viewport(0, 0, canvas.width, canvas.height);
@@ -198,6 +203,20 @@ export function initWater(canvas) {
       return;
     }
     if (now - lastFrame >= interval) {
+      // Sustained missed frames catch weak GPUs that hardware hints don't describe.
+      if (!limited && lastTick) {
+        samples++;
+        if (now - lastTick > 60) slowFrames++;
+        if (samples >= 120) {
+          if (slowFrames > samples * 0.4) {
+            limited = true;
+            interval = 1000 / 20;
+            targetX = targetY = pointerX = pointerY = 0;
+            resize();
+          }
+          samples = slowFrames = 0;
+        }
+      }
       if (lastTick) elapsed += Math.min((now - lastTick) / 1000, 0.1);
       lastTick = now;
       lastFrame = now - (now - lastFrame) % interval;
@@ -212,7 +231,8 @@ export function initWater(canvas) {
     cancelAnimationFrame(frame);
     frame = 0;
     lastTick = 0;
-    if (motion.matches || coarse.matches || small.matches) {
+    samples = slowFrames = 0;
+    if (limited || motion.matches || coarse.matches || small.matches) {
       targetX = targetY = pointerX = pointerY = 0;
     }
     if (document.hidden || lost || disposed) return;
@@ -221,7 +241,7 @@ export function initWater(canvas) {
   }
 
   function move(event) {
-    if (motion.matches || coarse.matches || small.matches || event.pointerType !== "mouse") return;
+    if (limited || motion.matches || coarse.matches || small.matches || event.pointerType !== "mouse") return;
     targetX = event.clientX / innerWidth - 0.5;
     targetY = 0.5 - event.clientY / innerHeight;
   }
