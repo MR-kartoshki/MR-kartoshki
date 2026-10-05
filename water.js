@@ -112,7 +112,6 @@ export function initWater(canvas) {
   const coarse = matchMedia("(pointer: coarse)");
   const small = matchMedia("(max-width: 700px)");
   let limited = (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4)
-    || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4)
     || navigator.connection?.saveData === true;
   const lowPower = coarse.matches || small.matches || limited;
   const shaders = [];
