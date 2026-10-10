@@ -40,7 +40,6 @@ function initCarousel(carousel) {
     const clone = slide.cloneNode(true);
     clone.setAttribute("aria-hidden", "true");
     clone.inert = true;
-    clone.querySelector("[data-stats]")?.removeAttribute("data-stats");
     if (prepend) track.prepend(clone);
     else track.append(clone);
   }
@@ -65,11 +64,20 @@ function initCarousel(carousel) {
     const card = allSlides[index];
     return card.offsetLeft - track.offsetLeft - (carousel.clientWidth - card.offsetWidth) / 2;
   }
+  function blendSlides() {
+    const spacing = slideLeft(1) - slideLeft(0);
+    allSlides.forEach((slide, index) => {
+      const distance = Math.abs(slideLeft(index) - carousel.scrollLeft) / spacing;
+      const fade = Math.max(0, Math.min(1, (distance - 1) * 2));
+      slide.style.opacity = String(1 - fade * fade * (3 - 2 * fade));
+    });
+  }
   function showSlide(index, smooth = true) {
     position = index;
     target = smooth ? index : null;
     updateSlide();
     carousel.scrollTo({ left: slideLeft(index), behavior: smooth && !motion.matches ? "smooth" : "instant" });
+    blendSlides();
   }
   function updateSlide() {
     const active = (position - 2 + slides.length) % slides.length;
@@ -90,6 +98,7 @@ function initCarousel(carousel) {
     updateSlide();
   }
   carousel.addEventListener("scroll", () => {
+    blendSlides();
     if (target === null) position = allSlides.reduce((nearest, _, index) =>
       Math.abs(slideLeft(index) - carousel.scrollLeft) < Math.abs(slideLeft(nearest) - carousel.scrollLeft) ? index : nearest, 0);
     updateSlide();
@@ -215,11 +224,11 @@ async function loadFeaturedStats() {
     if (!response.ok) return;
     const stats = await response.json();
     for (const [project, text] of Object.entries(stats)) {
-      const label = document.querySelector(`[data-stats="${project}"]`);
-      if (label && text) {
+      if (!text) continue;
+      document.querySelectorAll(`[data-stats="${project}"]`).forEach((label) => {
         label.textContent = text;
         label.hidden = false;
-      }
+      });
     }
   } catch {
     // Curated cards remain useful when live stats are unavailable.

@@ -519,10 +519,19 @@ html[data-page-scrollbar] .page-scrollbar {
 }
 
 .page-scrollbar__thumb {
+  pointer-events: visibleStroke;
+  cursor: grab;
+  touch-action: none;
   stroke: rgb(100 156 184 / 50%);
   filter: drop-shadow(0 0 1px rgb(203 213 225 / 45%));
   stroke-dasharray: var(--page-scrollbar-thumb-size) var(--page-scrollbar-track-length);
   stroke-dashoffset: var(--page-scrollbar-offset);
+}
+
+html[data-scrollbar-dragging],
+html[data-scrollbar-dragging] * {
+  cursor: grabbing !important;
+  user-select: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -620,11 +629,12 @@ section[id] {
 }
 
 .project-carousel {
+  max-width: 3048px;
   overflow: auto;
   scrollbar-width: none;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
-  margin: 2rem 0 1.5rem;
+  margin: 2rem auto 1.5rem;
 }
 
 .project-carousel::-webkit-scrollbar {

@@ -619,6 +619,7 @@ function getScrollableAmount() {
 let scrollbarOverscroll = 0;
 let scrollbarOverscrollTarget = 0;
 let scrollbarLastInput = 0;
+let lenis = null;
 const scrollbarReducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 const pageContent = document.querySelector("main");
 
@@ -626,13 +627,17 @@ function bouncePageScrollbar(event) {
   if (scrollbarReducedMotion.matches || event.ctrlKey || event.deltaY === 0) return;
   const scrollable = getScrollableAmount();
   if (scrollable <= 0) return;
-  const atEdge = (window.scrollY <= 1 && event.deltaY < 0)
-    || (window.scrollY >= scrollable - 1 && event.deltaY > 0);
-  if (!atEdge) return;
-  // Native scroll stays clamped; translate content to show the elastic range.
   const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+  const delta = event.deltaY * unit;
+  const destination = (lenis?.targetScroll ?? window.scrollY) + delta;
+  const excess = destination < 0 ? destination : destination > scrollable ? destination - scrollable : 0;
+  if (!excess) {
+    scrollbarOverscrollTarget = 0;
+    return;
+  }
+  // Keep the part of the gesture Lenis clamps away, before its animation reaches the edge.
   const limit = PAGE_SCROLLBAR.scrollPadding;
-  scrollbarOverscrollTarget = Math.max(-limit, Math.min(limit, scrollbarOverscrollTarget + event.deltaY * unit * 0.4));
+  scrollbarOverscrollTarget = Math.max(-limit, Math.min(limit, scrollbarOverscrollTarget + excess * 0.4));
   scrollbarLastInput = performance.now();
 }
 
@@ -646,15 +651,18 @@ function updatePageScrollbarThumb() {
   }
 
   const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-  if ((scrollbarOverscroll < 0 && scrollTop > 1)
-    || (scrollbarOverscroll > 0 && scrollTop < scrollable - 1)
+  if ((scrollbarOverscroll < 0 && (lenis?.targetScroll ?? scrollTop) > 1)
+    || (scrollbarOverscroll > 0 && (lenis?.targetScroll ?? scrollTop) < scrollable - 1)
     || scrollbarReducedMotion.matches) {
     scrollbarOverscroll = scrollbarOverscrollTarget = 0;
   }
+  const distance = scrollbarOverscroll < 0 ? scrollTop : scrollable - scrollTop;
+  const approach = Math.max(0, Math.min(1, 1 - distance / 120));
+  const pull = scrollbarOverscroll * approach;
   if (pageContent) {
-    pageContent.style.translate = scrollbarOverscroll === 0
+    pageContent.style.translate = pull === 0
       ? ""
-      : `0 ${-scrollbarOverscroll * 0.65}px`;
+      : `0 ${-pull * 0.65}px`;
   }
   const progress = Math.min(1, Math.max(0, scrollTop / scrollable));
 
@@ -663,10 +671,10 @@ function updatePageScrollbarThumb() {
   const start = -cornerLength;
   const end = -(trackLength - cornerLength - thumb);
   let offset = start + (end - start) * progress;
-  const extension = Math.min(1, Math.abs(scrollbarOverscroll) / scrollPadding);
-  if (scrollbarOverscroll < 0 && scrollTop <= 1) {
+  const extension = Math.min(1, Math.abs(pull) / scrollPadding);
+  if (pull < 0) {
     offset += (thumb - finish - start) * extension;
-  } else if (scrollbarOverscroll > 0 && scrollTop >= scrollable - 1) {
+  } else if (pull > 0) {
     offset += (-(trackLength - finish) - end) * extension;
   }
 
@@ -683,6 +691,34 @@ function schedulePageScrollbarResize() {
 }
 
 if (pageScrollbar) {
+  let drag = null;
+  pageScrollbarThumb.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || event.pointerType !== "mouse" || getScrollableAmount() <= 0) return;
+    event.preventDefault();
+    scrollbarOverscroll = scrollbarOverscrollTarget = 0;
+    drag = { id: event.pointerId, y: event.clientY, scroll: window.scrollY };
+    pageScrollbar.setPointerCapture(event.pointerId);
+    document.documentElement.setAttribute("data-scrollbar-dragging", "");
+    updatePageScrollbarThumb();
+  });
+  pageScrollbar.addEventListener("pointermove", (event) => {
+    if (!drag || event.pointerId !== drag.id) return;
+    const travel = Math.max(1, PAGE_SCROLLBAR.trackLength - PAGE_SCROLLBAR.cornerLength * 2 - PAGE_SCROLLBAR.thumb);
+    const amount = getScrollableAmount();
+    const top = Math.max(0, Math.min(amount, drag.scroll + (event.clientY - drag.y) / travel * amount));
+    if (lenis) lenis.scrollTo(top, { immediate: true, force: true });
+    else window.scrollTo({ top, behavior: "instant" });
+    updatePageScrollbarThumb();
+  });
+  function endDrag(event) {
+    if (!drag || event.pointerId !== drag.id) return;
+    drag = null;
+    document.documentElement.removeAttribute("data-scrollbar-dragging");
+    if (pageScrollbar.hasPointerCapture(event.pointerId)) pageScrollbar.releasePointerCapture(event.pointerId);
+  }
+  pageScrollbar.addEventListener("pointerup", endDrag);
+  pageScrollbar.addEventListener("pointercancel", endDrag);
+  pageScrollbar.addEventListener("lostpointercapture", endDrag);
   syncPageScrollbar();
   window.addEventListener("scroll", updatePageScrollbarThumb, { passive: true });
   window.addEventListener("wheel", bouncePageScrollbar, { passive: true });
@@ -692,7 +728,7 @@ if (pageScrollbar) {
   bodyObserver.observe(document.querySelector(".site-header"));
 }
 
-const lenis = typeof Lenis === "function" ? new Lenis({
+lenis = typeof Lenis === "function" ? new Lenis({
   autoRaf: false,
   autoToggle: true,
   anchors: true,
@@ -706,6 +742,8 @@ function animatePageScroll(now) {
   lenis?.raf(now);
   const dt = lastScrollFrame ? Math.min((now - lastScrollFrame) / 1000, 0.05) : 0;
   lastScrollFrame = now;
+  const edgeDistance = scrollbarOverscrollTarget < 0 ? window.scrollY : getScrollableAmount() - window.scrollY;
+  if (scrollbarOverscrollTarget !== 0 && edgeDistance > 1) scrollbarLastInput = now;
   if (now - scrollbarLastInput > 100) scrollbarOverscrollTarget = 0;
   if (scrollbarReducedMotion.matches || document.hidden) {
     scrollbarOverscroll = scrollbarOverscrollTarget = 0;
