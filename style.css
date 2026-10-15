@@ -862,6 +862,40 @@ section[id] {
   color: var(--text);
 }
 
+.profile-stats {
+  padding-bottom: 2rem;
+  border-top: 1px solid var(--accent);
+}
+
+.profile-stats > summary {
+  padding: 1rem 0;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.profile-stats > summary:hover,
+.profile-stats > summary:focus-visible {
+  color: var(--highlight);
+}
+
+.profile-stats > summary:focus-visible {
+  outline: 2px solid var(--highlight);
+  outline-offset: 4px;
+}
+
+.profile-stats__cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.profile-stats__cards img {
+  max-width: 100%;
+  height: auto;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

@@ -46,19 +46,3 @@ I write Java, mostly for Minecraft mods. Occasionally Python or Rust when someth
 
 ![Rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-68217A?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...&logoColor=white)
-
----
-
-## Stats
-
-<p align="center">
-  <img src="https://mr-kartoshki-stats.vercel.app/api?username=MR-kartoshki&show_icons=true&theme=tokyonight&hide_border=true" height="165" />
-  <img src="https://mr-kartoshki-stats.vercel.app/api/top-langs/?username=MR-kartoshki&layout=compact&theme=tokyonight&hide_border=true" height="165" />
-</p>
-<p align="center">
-  <img src="https://streak-stats.demolab.com?user=MR-kartoshki&theme=tokyonight&hide_border=true" />
-</p>
-
-<p align="center">
-  <img src="https://komarev.com/ghpvc/?username=MR-kartoshki&color=blue&style=flat-square" />
-</p>
