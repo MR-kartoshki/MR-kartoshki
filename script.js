@@ -8,8 +8,7 @@ const languageFilter = document.getElementById("languageFilter");
 const hideForksToggle = document.getElementById("hideForksToggle");
 const sortSelect = document.getElementById("sortSelect");
 const reverseSortToggle = document.getElementById("reverseSortToggle");
-const homeGithubLink = document.getElementById("homeGithubLink");
-const contactGithubLink = document.getElementById("contactGithubLink");
+const navGithubLink = document.getElementById("navGithubLink");
 const contactFormToggle = document.getElementById("contactFormToggle");
 const contactFormPanel = document.getElementById("contactFormPanel");
 const contactNameInput = document.getElementById("contactName");
@@ -37,8 +36,7 @@ const updatedDateFormatter = new Intl.DateTimeFormat(undefined, {
   day: "numeric",
 });
 
-homeGithubLink.href = `https://github.com/${username}`;
-contactGithubLink.href = `https://github.com/${username}`;
+navGithubLink.href = `https://github.com/${username}`;
 
 if (contactFormToggle && contactFormPanel) {
   contactFormToggle.addEventListener("click", () => {

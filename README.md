@@ -5,23 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://modrinth.com/user/MR-kartoshki">
-    <img src="https://img.shields.io/badge/Modrinth-00AF5C?style=flat-square&logo=modrinth&logoColor=white" />
-  </a>
-  <a href="https://discord.com/users/1080867173213417503">
-    <img src="https://img.shields.io/badge/Discord-freddy._.fazbear-5865F2?style=flat-square&logo=discord&logoColor=white" />
-  </a>
-</p>
-
-<p align="center">
   <a href="https://portfolio.iaske.net/">
     <img src="https://img.shields.io/badge/OPEN%20MY%20WEBSITE-38BDF8?style=for-the-badge&logo=githubpages&logoColor=0B1220" />
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://buymeacoffee.com/MRkartoshki">
-    <img src="https://img.shields.io/badge/Support%20Me-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" />
   </a>
 </p>
 
