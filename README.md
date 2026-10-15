@@ -1,33 +1,6 @@
-<h1 align="center">Nikita</h1>
+**Hey, I’m Nikita.**\
+IT student in Vienna building Minecraft mods, open-source tools, and whatever seems interesting.
 
-<p align="center">
-  IT student at TGM Vienna · Minecraft mod dev · Always tired
-</p>
-
-<p align="center">
-  <a href="https://portfolio.iaske.net/">
-    <img src="https://img.shields.io/badge/OPEN%20MY%20WEBSITE-38BDF8?style=for-the-badge&logo=githubpages&logoColor=0B1220" />
-  </a>
-</p>
-
----
-
-I write Java, mostly for Minecraft mods. Occasionally Python or Rust when something needs it. Projects start when something annoys me enough to fix it or when a friend says "Wouldn't it be funny if..."
-
-**Proudest project:** [Rawlands](https://github.com/MR-kartoshki/Rawlands) - This mod adds several new biomes to the game along with new blocks and flowers.
-
----
-
-## Languages
-
-![Java](https://img.shields.io/badge/Java-F80000?style=for-the-badge&logo=openjdk&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=FFD43B)
-![Lua](https://img.shields.io/badge/Lua-2C2D72?style=for-the-badge&logo=lua&logoColor=white)
-
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=000000)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-
-![Rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)
-![C#](https://img.shields.io/badge/C%23-68217A?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...&logoColor=white)
+<a href="https://portfolio.iaske.net/">
+  <img src=".github/website-button.svg" alt="Explore my website ↗" width="240" height="56">
+</a>
