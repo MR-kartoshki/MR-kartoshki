@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="https://portfolio.iaske.net/">
-    <img src="https://img.shields.io/badge/OPEN%20PORTFOLIO-38BDF8?style=for-the-badge&logo=githubpages&logoColor=0B1220" />
+    <img src="https://img.shields.io/badge/OPEN%20MY%20WEBSITE-38BDF8?style=for-the-badge&logo=githubpages&logoColor=0B1220" />
   </a>
 </p>
 

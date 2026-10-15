@@ -1,6 +1,10 @@
 const motion = matchMedia("(prefers-reduced-motion: reduce)");
 const menu = document.querySelector(".nav-menu");
 const navLinks = document.querySelector(".nav-links");
+new ResizeObserver(([entry]) => {
+  if (navLinks.classList.contains("is-open")) return;
+  document.documentElement.style.setProperty("--header-height", `${entry.target.getBoundingClientRect().height}px`);
+}).observe(document.querySelector(".site-header"));
 function closeMenu() {
   navLinks.classList.remove("is-open");
   menu.setAttribute("aria-expanded", "false");
@@ -44,18 +48,6 @@ function initCarousel(carousel) {
     else track.append(clone);
   }
   const allSlides = [...track.children];
-  const mediaObserver = new IntersectionObserver((entries, observer) => {
-    if (!entries.some((entry) => entry.isIntersecting)) return;
-    carousel.querySelectorAll("img").forEach((image) => { image.loading = "eager"; });
-    slides.forEach((slide) => {
-      const video = slide.querySelector("video");
-      if (!video) return;
-      const poster = new Image();
-      poster.src = video.poster;
-    });
-    observer.disconnect();
-  }, { rootMargin: "600px" });
-  mediaObserver.observe(carousel);
   let position = 2;
   let settleTimer;
   let target = null;
@@ -65,9 +57,11 @@ function initCarousel(carousel) {
     return card.offsetLeft - track.offsetLeft - (carousel.clientWidth - card.offsetWidth) / 2;
   }
   function blendSlides() {
-    const spacing = slideLeft(1) - slideLeft(0);
+    const positions = allSlides.map((_, index) => slideLeft(index));
+    const spacing = positions[1] - positions[0];
+    const scrollLeft = carousel.scrollLeft;
     allSlides.forEach((slide, index) => {
-      const distance = Math.abs(slideLeft(index) - carousel.scrollLeft) / spacing;
+      const distance = Math.abs(positions[index] - scrollLeft) / spacing;
       const fade = Math.max(0, Math.min(1, (distance - 1) * 2));
       slide.style.opacity = String(1 - fade * fade * (3 - 2 * fade));
     });
@@ -137,6 +131,15 @@ function initCarousel(carousel) {
   updateSlide();
 }
 document.querySelectorAll(".project-carousel").forEach(initCarousel);
+
+const terminalCard = document.querySelector('[data-project="browser-linux"]:not([aria-hidden])');
+terminalCard.querySelector(".terminal-start").addEventListener("click", () => {
+  const terminal = terminalCard.querySelector("iframe");
+  terminal.src = terminal.dataset.src;
+  terminal.hidden = false;
+  terminalCard.querySelector(".terminal-preview").hidden = true;
+  terminal.focus();
+}, { once: true });
 
 const canPreview = matchMedia("(hover: hover) and (pointer: fine)");
 const videoCards = [...document.querySelectorAll(".video-card:not([aria-hidden])")];

@@ -583,6 +583,7 @@ function syncPageScrollbar() {
   if (!pageScrollbar || !pageScrollbarTrack || !pageScrollbarThumb) return;
 
   readScrollbarCssVars();
+  scrollableAmount = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
 
   const top = document.querySelector(".site-header").getBoundingClientRect().height;
   const height = Math.max(PAGE_SCROLLBAR.radius * 2, window.innerHeight - top);
@@ -612,10 +613,12 @@ function syncPageScrollbar() {
   updatePageScrollbarThumb();
 }
 
+let scrollableAmount = 0;
 function getScrollableAmount() {
-  return Math.max(0, (document.documentElement.scrollHeight || 0) - window.innerHeight);
+  return scrollableAmount;
 }
 
+let scrollbarOffset;
 let scrollbarOverscroll = 0;
 let scrollbarOverscrollTarget = 0;
 let scrollbarLastInput = 0;
@@ -678,7 +681,10 @@ function updatePageScrollbarThumb() {
     offset += (-(trackLength - finish) - end) * extension;
   }
 
-  document.documentElement.style.setProperty("--page-scrollbar-offset", offset);
+  if (offset !== scrollbarOffset) {
+    document.documentElement.style.setProperty("--page-scrollbar-offset", offset);
+    scrollbarOffset = offset;
+  }
 }
 
 let scrollbarResizeFrame;
@@ -742,8 +748,10 @@ function animatePageScroll(now) {
   lenis?.raf(now);
   const dt = lastScrollFrame ? Math.min((now - lastScrollFrame) / 1000, 0.05) : 0;
   lastScrollFrame = now;
-  const edgeDistance = scrollbarOverscrollTarget < 0 ? window.scrollY : getScrollableAmount() - window.scrollY;
-  if (scrollbarOverscrollTarget !== 0 && edgeDistance > 1) scrollbarLastInput = now;
+  if (scrollbarOverscrollTarget !== 0) {
+    const edgeDistance = scrollbarOverscrollTarget < 0 ? window.scrollY : scrollableAmount - window.scrollY;
+    if (edgeDistance > 1) scrollbarLastInput = now;
+  }
   if (now - scrollbarLastInput > 100) scrollbarOverscrollTarget = 0;
   if (scrollbarReducedMotion.matches || document.hidden) {
     scrollbarOverscroll = scrollbarOverscrollTarget = 0;

@@ -1,0 +1,25 @@
+[Unit]
+Description=Browser Linux network relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+DynamicUser=yes
+WorkingDirectory=/srv/browser-relay
+ExecStart=/srv/browser-relay/.venv/bin/python /srv/browser-relay/server.py
+Environment=RELAY_HOST=10.0.0.63
+Environment=RELAY_TRUSTED_PROXY=10.0.0.70
+Restart=on-failure
+RestartSec=5
+ProtectSystem=strict
+ProtectHome=tmpfs
+BindReadOnlyPaths=/root/relay:/srv/browser-relay
+PrivateTmp=yes
+NoNewPrivileges=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+MemoryMax=256M
+TasksMax=128
+
+[Install]
+WantedBy=multi-user.target

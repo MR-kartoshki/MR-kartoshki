@@ -1,0 +1,7 @@
+{
+  "version": "6ef842ece6830d69",
+  "alpine": "3.23.6",
+  "v86": "0.5.471",
+  "memory": 268435456,
+  "base": "/vm-assets/6ef842ece6830d69/"
+}

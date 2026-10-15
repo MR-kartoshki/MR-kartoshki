@@ -6,3 +6,6 @@
 !.env.example
 
 node_modules/
+
+.browser-linux-build/
+terminal/vendor/

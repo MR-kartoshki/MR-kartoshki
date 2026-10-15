@@ -29,6 +29,7 @@ float height(vec2 p) {
   h += sin(dot(p, vec2(3.7, 2.1)) - t * 0.63 + h * 1.4) * 0.08;
   h += sin(dot(p, vec2(-5.2, 8.7)) + t * 1.43 + h * 1.7) * 0.018;
   h += sin(dot(p, vec2(10.3, -6.1)) + t * 1.12 + h) * 0.008;
+#endif
   for (int i = 0; i < 6; i++) {
     float age = time - ripples[i].z;
     if (age < 0.0 || age >= 6.0 || ripples[i].w == 0.0) continue;
@@ -38,7 +39,6 @@ float height(vec2 p) {
       * exp(-age * 0.8) * smoothstep(0.0, 0.3, age)
       * (1.0 - smoothstep(4.5, 6.0, age)) * ripples[i].w;
   }
-#endif
   return h;
 }
 
@@ -130,7 +130,7 @@ export function initWater(canvas) {
   let frame = 0;
   let disposed = false;
   let lost = false;
-  let elapsed = 0;
+  let elapsed = Math.random() * 300;
   let lastFrame = 0;
   let lastTick = 0;
   let samples = 0;
@@ -248,6 +248,8 @@ export function initWater(canvas) {
     samples = slowFrames = 0;
     if (limited || motion.matches || coarse.matches || small.matches) {
       targetX = targetY = pointerX = pointerY = 0;
+    }
+    if (motion.matches) {
       ripples.fill(0);
       drag = null;
     }
@@ -257,7 +259,7 @@ export function initWater(canvas) {
   }
 
   function interactive(event) {
-    return !lowPower && !limited && !motion.matches && !coarse.matches && !small.matches
+    return !motion.matches
       && event.pointerType === "mouse" && !document.documentElement.hasAttribute("data-scrollbar-dragging");
   }
 
@@ -270,8 +272,10 @@ export function initWater(canvas) {
     if (!interactive(event)) return;
     const x = event.clientX / innerWidth - 0.5;
     const y = 0.5 - event.clientY / innerHeight;
-    targetX = x;
-    targetY = y;
+    if (!lowPower && !limited && !coarse.matches && !small.matches) {
+      targetX = x;
+      targetY = y;
+    }
     if (drag && drag.id === event.pointerId
       && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 6) drag.moved = true;
   }
@@ -283,8 +287,8 @@ export function initWater(canvas) {
         const slot = (nextRipple + i) % 6;
         const offset = slot * 4;
         if (ripples[offset + 3] !== 0 && elapsed - ripples[offset + 2] < 6) continue;
-        ripples[offset] = (event.clientX / innerWidth - 0.5) * (canvas.width / canvas.height) * 7;
-        ripples[offset + 1] = (0.5 - event.clientY / innerHeight) * 7;
+        ripples[offset] = (event.clientX / innerWidth - 0.5) * (canvas.width / canvas.height) * 7 + pointerX * 0.12;
+        ripples[offset + 1] = (0.5 - event.clientY / innerHeight) * 7 + pointerY * 0.12;
         ripples[offset + 2] = elapsed;
         ripples[offset + 3] = 0.025;
         nextRipple = (slot + 1) % 6;

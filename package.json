@@ -5,10 +5,18 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "check": "node --check script.js && node --check worker.js && node --check water.js && node --check home.js",
-    "test": "node --test worker.test.js"
+    "check": "node --check script.js && node --check worker.js && node --check water.js && node --check home.js && node --check vm-assets.js && node --check terminal/terminal.js && node --check terminal/storage.js",
+    "test": "node --test worker.test.js vm-assets.test.js",
+    "build:vm": "bash scripts/browser-linux/build.sh",
+    "upload:vm": "node scripts/browser-linux/upload.mjs"
   },
   "devDependencies": {
     "wrangler": "4.147.0"
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/addon-serialize": "0.14.0",
+    "@xterm/xterm": "6.0.0",
+    "v86": "0.5.471"
   }
 }

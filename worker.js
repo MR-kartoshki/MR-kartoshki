@@ -1,3 +1,5 @@
+import { serveVmAsset } from "./vm-assets.js";
+
 const username = "MR-kartoshki";
 const freshnessMs = 10 * 60_000;
 
@@ -218,6 +220,7 @@ async function handleContact(request, env) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (url.pathname.startsWith("/vm-assets/")) return serveVmAsset(request, env, ctx);
     if (url.pathname.startsWith("/media/videos/")) return serveVideo(request, env, ctx);
     if (url.pathname === "/api/featured") return featuredMetadata(request, env, ctx);
     if (url.pathname === "/api/contact") return handleContact(request, env);

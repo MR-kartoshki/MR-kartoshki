@@ -317,7 +317,7 @@ p {
   border-radius: 999px;
   background: linear-gradient(90deg, #334155 20%, #475569 50%, #334155 80%);
   background-size: 200% 100%;
-  animation: skeleton-shimmer 1.3s ease-in-out infinite;
+
 }
 
 .skeleton-title {
@@ -350,15 +350,6 @@ p {
   height: 2.2rem;
 }
 
-@keyframes skeleton-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-
-  100% {
-    background-position: -200% 0;
-  }
-}
 
 .project-card:hover,
 .project-card:focus-within {
@@ -545,7 +536,7 @@ section[id] {
 }
 
 .hero {
-  min-height: calc(90svh - 64px);
+  min-height: calc(100dvh - var(--header-height, 64px));
   display: flex;
   align-items: center;
   padding: 5rem 0;
@@ -596,6 +587,41 @@ section[id] {
 
 #projects .container {
   width: min(1280px, 92vw);
+}
+
+:is(#projects, #bad-apple) {
+  padding-top: 1rem;
+  scroll-margin-top: calc(var(--header-height, 64px) + 8px);
+}
+
+:is(#projects, #bad-apple) h2 { margin-bottom: .4rem; }
+:is(#projects, #bad-apple) .section-subtitle { margin-bottom: 0; }
+:is(#projects, #bad-apple) .project-carousel { margin-block: 1rem; }
+
+@media (min-height: 700px) {
+  :is(#projects, #bad-apple) .featured-card {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - var(--header-height, 64px) - 190px);
+  }
+  #projects .featured-image {
+    flex: 1;
+    min-height: 0;
+    height: 0;
+  }
+  #bad-apple .video-stage {
+    flex: 1;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+  :is(#projects, #bad-apple) .featured-copy { flex-shrink: 0; }
+  #projects .terminal-project { height: 100%; }
+}
+
+@media (max-width: 600px) and (min-height: 700px) {
+  #bad-apple .featured-card {
+    height: calc(100dvh - var(--header-height, 64px) - 220px);
+  }
 }
 
 #bad-apple .container {
@@ -668,6 +694,35 @@ section[id] {
 
 .featured-copy {
   padding: 1.6rem 2rem;
+}
+
+[data-project="browser-linux"] { background: rgb(8 22 42 / 50%); }
+
+.terminal-project {
+  display: block;
+  width: 100%;
+  height: 700px;
+  border: 0;
+  background: transparent;
+}
+
+.terminal-project[hidden] { display: none; }
+
+.terminal-preview {
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.terminal-preview p { margin: 1rem 0 1.5rem; }
+
+@media (max-width: 1100px) {
+  .terminal-project { height: 760px; }
+}
+
+@media (max-width: 600px) {
+  .terminal-project { height: 860px; }
 }
 
 .featured-copy h3 {
@@ -844,9 +899,6 @@ section[id] {
   .nav-links a {
     display: block;
     padding: 0.65rem 0;
-  }
-  .hero {
-    min-height: calc(90svh - 64px);
   }
   .carousel-track {
     gap: 0.8rem;

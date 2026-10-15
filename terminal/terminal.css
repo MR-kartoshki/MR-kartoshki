@@ -1,0 +1,28 @@
+:root { color-scheme: normal; font-family: system-ui, sans-serif; background: transparent; color: #dce7f5; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { display: flex; flex-direction: column; height: 100dvh; margin: auto; padding: 0 12px 12px; }
+header, .statusbar, footer { flex-shrink: 0; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding: 24px 18px 0; }
+h1 { font-size: 29px; margin: 0 0 6px; letter-spacing: -.04em; }
+p { color: #98abc2; line-height: 1.6; margin: 6px 0; }
+a { color: #7dd3fc; text-decoration: none; }
+a:hover { text-decoration: underline; }
+nav, .dialog-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+button, .button { display: inline-block; background: #16243a80; color: #dce7f5; border: 1px solid #30415b; border-radius: 8px; padding: 10px 14px; font: inherit; font-size: 13px; cursor: pointer; }
+button:hover, .button:hover { background: #22355080; }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, .button:focus-visible, a:focus-visible { outline: 2px solid #7dd3fc; outline-offset: 3px; }
+.statusbar { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; padding: 12px 16px; background: #13203580; border: 1px solid #26364d; border-bottom: 0; border-radius: 10px 10px 0 0; font-size: 13px; }
+#status { color: #7dd3fc; }
+#saved { color: #98abc2; text-align: right; }
+#terminal { flex: 1; min-height: 160px; padding: 16px 12px; overflow: hidden; background: transparent; border: 1px solid #26364d; border-radius: 0 0 10px 10px; }
+#terminal-screen { height: 100%; }
+.xterm { height: 100%; }
+#terminal .xterm-viewport { background-color: transparent; scrollbar-color: #30415b80 transparent; }
+footer { margin-top: 18px; font-size: 13px; }
+code { font-family: ui-monospace, monospace; color: #b6d5ed; }
+dialog { max-width: 440px; border: 1px solid #30415b; border-radius: 12px; padding: 24px; background: #13203580; color: #dce7f5; }
+dialog::backdrop { background: #0009; }
+.dialog-actions { justify-content: flex-end; margin-top: 24px; }
+@media (max-width: 600px) { main { padding: 16px 10px; } .statusbar { flex-direction: column; } #saved { text-align: left; } nav { gap: 6px; } button, .button { padding: 9px 11px; } #terminal { padding: 10px 5px; } }

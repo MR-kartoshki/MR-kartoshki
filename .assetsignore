@@ -1,5 +1,7 @@
 *
 !index.html
+!robots.txt
+!sitemap.xml
 !script.js
 !water.js
 !style.css
@@ -10,3 +12,8 @@
 !home.js
 !media/
 !media/**
+!terminal/
+!terminal/**
+
+!vendor/
+!vendor/**

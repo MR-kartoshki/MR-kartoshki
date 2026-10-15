@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="A real Alpine Linux machine running in your browser.">
+  <title>Browser Linux · MR-Kartoshki</title>
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" href="/terminal/vendor/xterm.css">
+  <link rel="stylesheet" href="/terminal/terminal.css">
+  <script type="module">
+    if (window.self === window.top) location.replace("/#projects");
+    else import("/terminal/terminal.js");
+  </script>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Browser Linux</h1>
+        <p>Real Alpine in your browser.</p>
+      </div>
+      <nav aria-label="Machine controls">
+        <button id="save" disabled>Save</button>
+        <button id="export" disabled>Download backup</button>
+        <button id="restore" disabled>Restore backup</button>
+        <input id="import" type="file" accept=".browser-linux,application/gzip" hidden>
+        <button id="reset" disabled>Reset machine</button>
+      </nav>
+    </header>
+    <div class="statusbar">
+      <span id="status" role="status">Loading machine…</span>
+      <span id="saved">Changes stay on this device.</span>
+    </div>
+    <div id="terminal" aria-label="Alpine Linux terminal"><div id="terminal-screen"></div></div>
+    <footer>
+      <p><a href="https://github.com/copy/v86" target="_blank" rel="noopener noreferrer">v86</a> · <a href="https://xtermjs.org/" target="_blank" rel="noopener noreferrer">xterm.js</a> · <a href="https://alpinelinux.org/" target="_blank" rel="noopener noreferrer">Alpine Linux</a> · <a href="/terminal/licenses" target="_blank" rel="noopener noreferrer">Licenses</a></p>
+    </footer>
+    <dialog id="reset-dialog">
+      <form method="dialog">
+        <h2>Reset this machine?</h2>
+        <p>This deletes your saved files and installed packages. Download a backup first if you want to keep them.</p>
+        <div class="dialog-actions"><button value="cancel">Cancel</button><button value="reset">Reset machine</button></div>
+      </form>
+    </dialog>
+  </main>
+</body>
+</html>
