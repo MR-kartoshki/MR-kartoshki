@@ -1,0 +1,40 @@
+.not-found-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+.not-found {
+  flex: 1;
+  display: grid;
+  align-items: center;
+  padding-block: 4rem 6rem;
+}
+
+.not-found-copy {
+  max-width: 680px;
+}
+
+.not-found-code {
+  margin: 0 0 1.5rem -0.06em;
+  color: var(--highlight);
+  font-size: clamp(7rem, 22vw, 14rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.07em;
+}
+
+.not-found-description {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 700px) {
+  .not-found-page .nav-links {
+    display: none;
+  }
+
+  .not-found {
+    padding-block: 3rem;
+  }
+}
