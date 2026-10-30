@@ -5,7 +5,7 @@
   "preview_urls": false,
   "routes": [
     {
-      "pattern": "portfolio.iaske.net",
+      "pattern": "iaske.net",
       "custom_domain": true
     }
   ],

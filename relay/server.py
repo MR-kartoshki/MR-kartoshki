@@ -11,7 +11,7 @@ from collections import Counter
 from websockets.asyncio.server import serve
 from websockets.exceptions import ConnectionClosed
 
-ORIGIN = os.environ.get("RELAY_ORIGIN", "https://portfolio.iaske.net")
+ORIGIN = os.environ.get("RELAY_ORIGIN", "https://iaske.net")
 HOST = os.environ.get("RELAY_HOST", "127.0.0.1")
 PORT = int(os.environ.get("RELAY_PORT", "8765"))
 TRUSTED_PROXY = os.environ.get("RELAY_TRUSTED_PROXY", "127.0.0.1")
