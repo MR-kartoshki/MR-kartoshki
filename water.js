@@ -117,7 +117,7 @@ export function initWater(canvas) {
   });
   if (!gl) return () => {};
 
-  const motion = matchMedia("(prefers-reduced-motion: reduce)");
+  const motion = window.siteMotion;
   const coarse = matchMedia("(pointer: coarse)");
   const small = matchMedia("(max-width: 700px)");
   let limited = (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 4)
@@ -368,4 +368,5 @@ export function initWater(canvas) {
   return cleanup;
 }
 
-initWater(document.querySelector(".water-background"));
+const waterCanvas = document.querySelector(".water-background:not([data-manual])");
+if (waterCanvas) initWater(waterCanvas);

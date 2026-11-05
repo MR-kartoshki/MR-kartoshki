@@ -27,6 +27,7 @@
   <link rel="preload" href="/media/qr-final-poster.webp" as="image" fetchpriority="high">
   <link rel="stylesheet" href="vendor/lenis-1.3.25.css">
   <script src="vendor/lenis-1.3.25.min.js" defer></script>
+  <script src="effects.js" defer></script>
   <script src="script.js" defer></script>
   <script src="home.js?v=performance-1" type="module"></script>
   <script src="water.js" type="module"></script>
@@ -92,14 +93,7 @@
         <div class="carousel-track">
           <div class="featured-card" data-project="browser-linux" role="group" aria-roledescription="slide" aria-label="1 of 4: Browser Linux">
             <h3 class="sr-only" aria-hidden="true">Browser Linux</h3>
-            <div class="terminal-preview terminal-project">
-              <div>
-                <h3>Browser Linux</h3>
-                <p>A real Alpine Linux machine, running in your browser.</p>
-                <button class="button terminal-start" type="button">Start terminal</button>
-              </div>
-            </div>
-            <iframe hidden class="terminal-project" data-src="/terminal/?embed" title="Browser Linux terminal" loading="lazy" data-lenis-prevent></iframe>
+            <iframe class="terminal-project" data-src="/terminal/?embed" title="Browser Linux terminal" allow="fullscreen" loading="lazy" data-lenis-prevent></iframe>
           </div>
           <div class="featured-card" data-project="rawlands" role="group" aria-roledescription="slide" aria-label="2 of 4: Rawlands">
             <img class="featured-image" src="media/rawlands-1100.webp" srcset="media/rawlands-600.webp 600w, media/rawlands-1100.webp 1100w" sizes="auto, (max-width: 700px) 90vw, min(80vw, 1000px)" alt="Rawlands Dead Forest biome with bare trees and rugged terrain" width="1100" height="619" loading="lazy" decoding="async">
@@ -223,7 +217,7 @@
             <div class="controls" aria-label="Repository filters">
               <label class="control control--search">
                 <span>Search</span>
-                <input id="searchInput" type="search" placeholder="Search repository name" autocomplete="off">
+                <input id="searchInput" type="search" placeholder="Search names, descriptions, languages" autocomplete="off">
               </label>
 
               <label class="control">
@@ -243,6 +237,7 @@
                 </select>
               </label>
 
+              <button id="clearFilters" class="button" type="button">Clear filters</button>
               <div class="controls-toggles">
                 <label class="toggle">
                   <input id="hideForksToggle" type="checkbox" checked>
@@ -266,8 +261,10 @@
     <section id="contact" class="section">
       <div class="container">
         <h2>Want to talk?</h2>
-        <p>Find me through the links above, or send me a direct message here.</p>
+        <p>Find me on GitHub or Discord, or send me a message here.</p>
         <div class="contact-links">
+          <a class="button" href="https://github.com/MR-kartoshki" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a class="button" href="https://discord.com/users/1080867173213417503" target="_blank" rel="noopener noreferrer">Discord</a>
           <button id="contactFormToggle" class="button" type="button" aria-controls="contactFormPanel" aria-expanded="false">Send a message</button>
         </div>
 
@@ -308,7 +305,10 @@
 
   <footer class="site-footer container">
     <p>© 2026 Nikita · MR-Kartoshki</p>
-    <a href="https://github.com/MR-kartoshki/MR-kartoshki" target="_blank" rel="noopener noreferrer">Portfolio source ↗</a>
+    <div class="footer-actions">
+      <button id="effectsToggle" class="effects-toggle" type="button" aria-pressed="false">Effects on</button>
+      <a href="https://github.com/MR-kartoshki/MR-kartoshki" target="_blank" rel="noopener noreferrer">Portfolio source ↗</a>
+    </div>
   </footer>
 
   <svg class="page-scrollbar" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">

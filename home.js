@@ -1,4 +1,4 @@
-const motion = matchMedia("(prefers-reduced-motion: reduce)");
+const motion = window.siteMotion;
 const menu = document.querySelector(".nav-menu");
 const navLinks = document.querySelector(".nav-links");
 new ResizeObserver(([entry]) => {
@@ -25,6 +25,12 @@ menu.closest("nav").addEventListener("keydown", (event) => {
 
 const repositoryToggle = document.getElementById("repositoryToggle");
 const repositoryPanel = document.getElementById("repositoryPanel");
+if (["q", "language", "sort", "forks", "reverse"].some((key) => new URLSearchParams(location.search).has(key))) {
+  repositoryToggle.setAttribute("aria-expanded", "true");
+  repositoryToggle.textContent = "Hide repositories ↑";
+  repositoryPanel.inert = false;
+  repositoryPanel.classList.add("is-open");
+}
 repositoryToggle.addEventListener("click", () => {
   const open = repositoryToggle.getAttribute("aria-expanded") !== "true";
   repositoryToggle.setAttribute("aria-expanded", String(open));
@@ -133,13 +139,8 @@ function initCarousel(carousel) {
 document.querySelectorAll(".project-carousel").forEach(initCarousel);
 
 const terminalCard = document.querySelector('[data-project="browser-linux"]:not([aria-hidden])');
-terminalCard.querySelector(".terminal-start").addEventListener("click", () => {
-  const terminal = terminalCard.querySelector("iframe");
-  terminal.src = terminal.dataset.src;
-  terminal.hidden = false;
-  terminalCard.querySelector(".terminal-preview").hidden = true;
-  terminal.focus();
-}, { once: true });
+const terminal = terminalCard.querySelector("iframe");
+terminal.src = terminal.dataset.src;
 
 const canPreview = matchMedia("(hover: hover) and (pointer: fine)");
 const videoCards = [...document.querySelectorAll(".video-card:not([aria-hidden])")];

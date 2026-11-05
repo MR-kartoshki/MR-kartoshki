@@ -26,3 +26,31 @@ dialog { max-width: 440px; border: 1px solid #30415b; border-radius: 12px; paddi
 dialog::backdrop { background: #0009; }
 .dialog-actions { justify-content: flex-end; margin-top: 24px; }
 @media (max-width: 600px) { main { padding: 16px 10px; } .statusbar { flex-direction: column; } #saved { text-align: left; } nav { gap: 6px; } button, .button { padding: 9px 11px; } #terminal { padding: 10px 5px; } }
+
+:root.standalone, :root:fullscreen { background: #0b1220; }
+[hidden] { display: none !important; }
+
+:root:not(.standalone) .standalone-only { display: none; }
+.standalone body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+.standalone main { width: min(1400px, 94vw); padding: 0 0 16px; }
+.standalone header { padding-inline: 0; }
+.standalone h1 { color: var(--heading); }
+.standalone p { color: var(--text); }
+.standalone button, .standalone .button {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--text);
+  backdrop-filter: blur(8px);
+}
+.standalone button:hover, .standalone .button:hover { border-color: var(--highlight); }
+.standalone .statusbar, .standalone #terminal, .standalone dialog {
+  background: var(--surface);
+  border-color: var(--accent);
+  backdrop-filter: blur(8px);
+}
+.standalone footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; }
+.standalone footer p { order: -1; }
+.standalone .effects-toggle { border: 0; background: none; padding: 0.5rem 0; color: #98abc2; font-size: inherit; backdrop-filter: none; }
+.standalone .effects-toggle:hover, .standalone .effects-toggle:focus-visible { color: var(--highlight); }
+.terminal-home { display: inline-block; margin-bottom: 8px; font-size: 13px; }
+@media (max-width: 600px) { .standalone main { height: auto; min-height: 100dvh; } .standalone #terminal { flex-basis: 55dvh; } }

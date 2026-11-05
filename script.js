@@ -326,7 +326,7 @@ function renderLoadingSkeletons(count = skeletonCardCount) {
 
 function updateLanguageFilterOptions(repos) {
   const languages = Array.from(
-    new Set(repos.map((repo) => repo.language).filter(Boolean))
+    new Set(repos.flatMap((repo) => state.repoLanguages.get(repo.id) || [repo.language]).filter(Boolean))
   ).sort((a, b) => a.localeCompare(b));
 
   const currentValue = languageFilter.value;
@@ -354,11 +354,12 @@ function getFilteredRepos() {
       return false;
     }
 
-    if (selectedLanguage !== "all" && repo.language !== selectedLanguage) {
+    if (selectedLanguage !== "all" && !(state.repoLanguages.get(repo.id) || [repo.language]).includes(selectedLanguage)) {
       return false;
     }
 
-    if (searchTerm && !repo.name.toLowerCase().includes(searchTerm)) {
+    const searchable = [repo.name, repo.description, repo.language, ...(state.repoLanguages.get(repo.id) || [])].filter(Boolean).join(" ").toLowerCase();
+    if (searchTerm && !searchTerm.split(/\s+/).every((term) => searchable.includes(term))) {
       return false;
     }
 
@@ -480,6 +481,7 @@ function applyRepositories(data) {
   state.repoLanguages = data.repoLanguages;
   state.hasIncompleteLanguageData = data.hasIncompleteLanguageData;
   updateLanguageFilterOptions(state.repos);
+  restoreRepositoryFilters();
   document.getElementById("repositoryCount").textContent = `${state.repos.length} public repositories on GitHub.`;
   renderProjects();
 }
@@ -496,11 +498,42 @@ async function fetchRepositories() {
   }
 }
 
-searchInput.addEventListener("input", renderProjects);
-languageFilter.addEventListener("change", renderProjects);
-hideForksToggle.addEventListener("change", renderProjects);
-sortSelect?.addEventListener("change", renderProjects);
-reverseSortToggle?.addEventListener("change", renderProjects);
+const repositoryParams = ["q", "language", "sort", "forks", "reverse"];
+function restoreRepositoryFilters() {
+  const params = new URLSearchParams(location.search);
+  searchInput.value = params.get("q") || "";
+  languageFilter.value = params.get("language") || "all";
+  if (!languageFilter.value) languageFilter.value = "all";
+  sortSelect.value = params.get("sort") || "pushed";
+  if (!sortSelect.value) sortSelect.value = "pushed";
+  hideForksToggle.checked = params.get("forks") !== "show";
+  reverseSortToggle.checked = params.get("reverse") === "1";
+}
+function updateRepositoryFilters() {
+  const url = new URL(location.href);
+  repositoryParams.forEach((key) => url.searchParams.delete(key));
+  if (searchInput.value.trim()) url.searchParams.set("q", searchInput.value.trim());
+  if (languageFilter.value !== "all") url.searchParams.set("language", languageFilter.value);
+  if (sortSelect.value !== "pushed") url.searchParams.set("sort", sortSelect.value);
+  if (!hideForksToggle.checked) url.searchParams.set("forks", "show");
+  if (reverseSortToggle.checked) url.searchParams.set("reverse", "1");
+  history.replaceState(null, "", url);
+  renderProjects();
+}
+document.getElementById("clearFilters").addEventListener("click", () => {
+  searchInput.value = "";
+  languageFilter.value = "all";
+  sortSelect.value = "pushed";
+  hideForksToggle.checked = true;
+  reverseSortToggle.checked = false;
+  updateRepositoryFilters();
+});
+window.addEventListener("popstate", () => { restoreRepositoryFilters(); renderProjects(); });
+searchInput.addEventListener("input", updateRepositoryFilters);
+languageFilter.addEventListener("change", updateRepositoryFilters);
+hideForksToggle.addEventListener("change", updateRepositoryFilters);
+sortSelect?.addEventListener("change", updateRepositoryFilters);
+reverseSortToggle?.addEventListener("change", updateRepositoryFilters);
 
 fetchRepositories();
 
@@ -621,7 +654,7 @@ let scrollbarOverscroll = 0;
 let scrollbarOverscrollTarget = 0;
 let scrollbarLastInput = 0;
 let lenis = null;
-const scrollbarReducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const scrollbarReducedMotion = window.siteMotion;
 const pageContent = document.querySelector("main");
 
 function bouncePageScrollbar(event) {
@@ -732,14 +765,19 @@ if (pageScrollbar) {
   bodyObserver.observe(document.querySelector(".site-header"));
 }
 
-lenis = typeof Lenis === "function" ? new Lenis({
-  autoRaf: false,
-  autoToggle: true,
-  anchors: true,
-  allowNestedScroll: true,
-  naiveDimensions: true,
-  stopInertiaOnNavigate: true,
+function syncSmoothScrolling() {
+  lenis?.destroy();
+  lenis = !scrollbarReducedMotion.matches && typeof Lenis === "function" ? new Lenis({
+    autoRaf: false,
+    autoToggle: true,
+    anchors: true,
+    allowNestedScroll: true,
+    naiveDimensions: true,
+    stopInertiaOnNavigate: true,
 }) : null;
+}
+scrollbarReducedMotion.addEventListener("change", syncSmoothScrolling);
+syncSmoothScrolling();
 
 let lastScrollFrame = 0;
 function animatePageScroll(now) {

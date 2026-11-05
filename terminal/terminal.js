@@ -221,8 +221,31 @@ async function boot() {
     await new Promise(() => {});
   });
 }
-boot().catch((error) => {
-  status.textContent = error.message;
-  resetButton.disabled = false;
-  console.error("VM boot failed", error);
-});
+const startButton = document.getElementById("start");
+function startMachine() {
+  startButton.hidden = true;
+  status.textContent = "Loading machine…";
+  void boot().catch((error) => {
+    status.textContent = error.message;
+    resetButton.disabled = false;
+    console.error("VM boot failed", error);
+  });
+}
+startButton.addEventListener("click", startMachine, { once: true });
+if (window.self === window.top) startMachine();
+
+const fullscreenButton = document.getElementById("fullscreen");
+if (document.fullscreenEnabled) {
+  fullscreenButton.hidden = false;
+  fullscreenButton.addEventListener("click", async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+    } catch {
+      status.textContent = "Fullscreen unavailable. Try Open separately.";
+    }
+  });
+  document.addEventListener("fullscreenchange", () => {
+    fullscreenButton.textContent = document.fullscreenElement ? "Exit fullscreen" : "Fullscreen";
+  });
+}
